@@ -1,0 +1,117 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<style>
+    /* Estilos gerais */
+    body {
+        background: url('/path/to/background-image.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Centralização do conteúdo */
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .login-box {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    /* Estilo da imagem de perfil */
+    .profile-pic {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto;
+        display: block;
+    }
+
+    /* Estilos para o título */
+    h2 {
+        font-size: 22px;
+        margin: 15px 0;
+    }
+
+    /* Estilo dos inputs e botões */
+    .form-floating {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        border-radius: 25px;
+        padding: 15px;
+    }
+
+    .btn-primary {
+        background-color: #000;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 0;
+        font-size: 16px;
+        width: 100%;
+    }
+
+    /* Estilo dos links */
+    a {
+        display: block;
+        margin-top: 10px;
+        color: #007bff;
+    }
+
+</style>
+
+<div class="login-container">
+    <div class="login-box">
+        
+        <h2>Bem vindo de volta ao Gold Stirrup!</h2><br />
+        <h3>LOGIN</h3><br></br>
+
+
+        <!-- Formulário de login -->
+        <section>
+            <form id="account" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                
+                <!-- Campo de email/usuário -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label asp-for="Input.Email" class="form-label">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                
+                <!-- Campo de senha -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label asp-for="Input.Password" class="form-label">Password</label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+
+                <!-- Botão de login -->
+                <button id="login-submit" type="submit" class="btn btn-primary">Log in</button>
+                
+                <!-- Links de esquecimento de senha e registro -->
+                <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+            </form>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

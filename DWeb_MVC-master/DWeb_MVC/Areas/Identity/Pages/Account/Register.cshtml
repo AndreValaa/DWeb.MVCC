@@ -1,0 +1,158 @@
+﻿@page
+@model RegisterModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<style>
+    /* Estilos gerais */
+    body {
+        background: url('/path/to/background-image.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Centralização do conteúdo */
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .register-box {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+    }
+
+    
+
+    /* Estilo dos inputs e botões */
+    .form-floating {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        border-radius: 25px;
+        padding: 15px;
+    }
+
+    .btn-primary {
+        background-color: #000;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 0;
+        font-size: 16px;
+        width: 100%;
+    }
+
+    /* Estilo dos links (se houver) */
+    a {
+        display: block;
+        margin-top: 10px;
+        color: #007bff;
+    }
+
+</style>
+
+<div class="register-container">
+    <div class="register-box">
+
+        <h2>Bem vindo ao Gold Stirrup!</h2><br />
+
+
+        <!-- Título -->
+        <h2>@ViewData["Title"]</h2>
+
+        <!-- Formulário de registro -->
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <input asp-for="Input.Clientes.Email" value="a@gmail.com" type="hidden" />
+
+            <div class="row">
+                <hr />
+
+                <div class="col-md-6">
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                    <!-- Campo de Email -->
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <label asp-for="Input.Email">Email</label>
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <!-- Campo de Username -->
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Clientes.UserId" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <label asp-for="Input.Clientes.UserId">UserName</label>
+                        <span asp-validation-for="Input.Clientes.UserId" class="text-danger"></span>
+                    </div>
+
+                    <!-- Campo de Senha -->
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                        <label asp-for="Input.Password">Password</label>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                    <!-- Campo de Confirmação de Senha -->
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                        <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Campo de Nome -->
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Clientes.Nome" class="form-control" placeholder="Full Name" />
+                        <label asp-for="Input.Clientes.Nome">Full Name</label>
+                        <span asp-validation-for="Input.Clientes.Nome" class="text-danger"></span>
+                    </div>
+
+                    <!-- Campo de Telemóvel -->
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Clientes.Telemovel" class="form-control" placeholder="Phone" />
+                        <label asp-for="Input.Clientes.Telemovel">Phone</label>
+                        <span asp-validation-for="Input.Clientes.Telemovel" class="text-danger"></span>
+                    </div>
+
+                    <!-- Campo de Morada -->
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Clientes.Morada" class="form-control" placeholder="Address" />
+                        <label asp-for="Input.Clientes.Morada">Address</label>
+                        <span asp-validation-for="Input.Clientes.Morada" class="text-danger"></span>
+                    </div>
+
+                    <!-- Campo de Código Postal -->
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Clientes.CodPostal" class="form-control" placeholder="Postal Code" />
+                        <label asp-for="Input.Clientes.CodPostal">Postal Code</label>
+                        <span asp-validation-for="Input.Clientes.CodPostal" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <hr />
+            </div>
+
+            <!-- Botão de Registro -->
+            <div class="row">
+                <div class="col-md-4">
+                    <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

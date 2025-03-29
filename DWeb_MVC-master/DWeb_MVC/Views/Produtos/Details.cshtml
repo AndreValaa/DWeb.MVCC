@@ -1,0 +1,64 @@
+﻿@model DWeb_MVC.Models.Produtos
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Detalhes do(a) @Model.Nome</h1>
+
+<div>
+    <h4>Produtos</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Nome)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Nome)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Marca)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Marca)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Preco)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Preco)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Categoria)
+        </dt>
+        <dd class="col-sm-10">
+            @foreach (var cat in Model.Categoria)
+            {
+                <span>@cat.Nome</span>
+
+                <br />
+            }
+        </dd>
+
+    </dl>
+
+    <h4>Fotografias do(a) @Model.Nome</h4>
+
+    @foreach (var foto in Model.Fotos)
+    {
+        <p>
+            <img src="~/imagens/@foto.NomeFicheiro"
+                 alt="fotografia do(a) @Model.Nome"
+                 title="@Model.Nome no @foto.Local em @foto.Data"
+                 width="200px" />
+        </p>
+    }
+
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
