@@ -49,15 +49,55 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/Home", context =>
-{
-    context.Response.Redirect("/Identity/Account/Login");
-    return Task.CompletedTask;
-});
+//app.MapGet("/Home", context =>
+//{
+//    context.Response.Redirect("/Identity/Account/Login");
+//    return Task.CompletedTask;
+//});
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+
+
+
 app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+    string[] roles = new[] { "Admin", "User" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    // Criar um admin padrão se não existir
+    var adminEmail = "admin@email.com";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+    if (adminUser == null)
+    {
+        var admin = new IdentityUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true
+        };
+        var result = await userManager.CreateAsync(admin, "Admin123!");
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(admin, "Admin");
+        }
+    }
+}
+
+
 app.Run();

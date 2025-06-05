@@ -26,8 +26,10 @@ namespace DWeb_MVC.Controllers
           * SELECT *
           * FROM Produtos a INNER JOIN Categoria c ON a.Categoria = c.Id
           */
-            var listaProdutos = await _bd.Produtos.Include(p => p.Categoria).ToListAsync();
-            return View(new { products = listaProdutos });
+            //var listaProdutos = await _bd.Produtos.Include(p => p.Categoria).ToListAsync();
+            //return View(new { products = listaProdutos });
+            return Redirect("/Identity/Account/Login");
+
         }
 
         public IActionResult Privacy()
