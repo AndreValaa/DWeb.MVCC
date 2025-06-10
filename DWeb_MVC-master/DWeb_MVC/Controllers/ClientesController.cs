@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DWeb_MVC.Controllers
 {
-    [Authorize(Roles = "Admin")]
+
     public class ClientesController : Controller
     {
         private readonly ApplicationDbContext _context;

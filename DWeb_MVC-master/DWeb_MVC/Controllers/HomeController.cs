@@ -20,15 +20,36 @@ namespace DWeb_MVC.Controllers
             _logger = logger;
         }
 
+        public async Task<IActionResult> UserHome()
+        {
+            var listaProdutos = await _bd.Produtos
+                .Include(p => p.Categoria)
+                .Include(p => p.Fotos)
+                .ToListAsync();
+
+            return View(listaProdutos);
+        }
+
+
+
         public async Task<IActionResult> Index()
         {
-            /* procurar, na base de dados, a lista dos produtos existentes
-          * SELECT *
-          * FROM Produtos a INNER JOIN Categoria c ON a.Categoria = c.Id
-          */
-            var listaProdutos = await _bd.Produtos.Include(p => p.Categoria).ToListAsync();
+
+          
+                if (User.Identity.Name?.ToLower() != "jose1@gmail.com")
+                {
+                    return RedirectToAction("UserHome");
+                }
+
+                /* procurar, na base de dados, a lista dos produtos existentes
+              * SELECT *
+              * FROM Produtos a INNER JOIN Categoria c ON a.Categoria = c.Id
+              */
+                var listaProdutos = await _bd.Produtos.Include(p => p.Categoria).ToListAsync();
             return View(new { products = listaProdutos });
         }
+
+
 
         public IActionResult Privacy()
         {

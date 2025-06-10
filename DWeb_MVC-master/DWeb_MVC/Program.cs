@@ -49,15 +49,21 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
 app.MapGet("/Home", context =>
 {
     context.Response.Redirect("/Identity/Account/Login");
     return Task.CompletedTask;
 });
 
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=UserHome}/{id?}");
+
+// app.MapControllerRoute(
+   // name: "default",
+    // pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
 app.Run();
