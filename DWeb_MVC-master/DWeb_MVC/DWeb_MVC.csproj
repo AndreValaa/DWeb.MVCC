@@ -24,6 +24,7 @@
     <Content Remove="Views\Home\Index1.cshtml" />
     <Content Remove="Views\Home\Index2.cshtml" />
     <Content Remove="Views\Home\Index3.cshtml" />
+    <Content Remove="Views\Home\Index4.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,10 +37,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.12" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\imagens\" />
   </ItemGroup>
 
 </Project>

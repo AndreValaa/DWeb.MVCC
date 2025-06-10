@@ -1,0 +1,26 @@
+﻿html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: hidden; 
+}
+
+#carouselLoja {
+    width: 100vw;
+    height: calc(100vh - 150px); 
+    overflow: hidden;
+}
+
+.carousel-inner,
+.carousel-item {
+    width: 100%;
+    height: 100%;
+}
+
+    .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        display: block;
+    }

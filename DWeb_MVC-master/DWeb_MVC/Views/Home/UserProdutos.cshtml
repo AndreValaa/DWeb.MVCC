@@ -1,0 +1,42 @@
+﻿@model List<DWeb_MVC.Models.Produtos>
+
+@{
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<h2 class="mt-4">Catálogo de Produtos</h2>
+
+<div class="row">
+    @foreach (var produto in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-50">
+                @if (produto.Fotos != null && produto.Fotos.Any())
+                {
+                    <img class="card-img-top" src="~/imagens/@produto.Fotos.First().NomeFicheiro" alt="Imagem do produto" />
+                }
+                else
+                {
+                    <img class="card-img-top" src="~/img/default.png" alt="Sem imagem" />
+                }
+
+                <div class="card-body">
+                    <h5 class="card-title">@produto.Nome</h5>
+                    <p class="card-text"><strong>Marca:</strong> @produto.Marca</p>
+                    <p class="card-text"><strong>Preço:</strong> @produto.Preco €</p>
+                    <p class="card-text">
+                        <strong>Categorias:</strong>
+                        @if (produto.Categoria != null && produto.Categoria.Any())
+                        {
+                            @string.Join(", ", produto.Categoria.Select(c => c.Nome))
+                        }
+                        else
+                        {
+                            <span>Nenhuma</span>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

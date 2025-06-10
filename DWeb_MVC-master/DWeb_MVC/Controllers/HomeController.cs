@@ -22,6 +22,11 @@ namespace DWeb_MVC.Controllers
 
         public async Task<IActionResult> UserHome()
         {
+            return View();
+        }
+
+        public async Task<IActionResult> UserProdutos()
+        {
             var listaProdutos = await _bd.Produtos
                 .Include(p => p.Categoria)
                 .Include(p => p.Fotos)
