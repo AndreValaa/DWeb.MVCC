@@ -48,13 +48,15 @@
             // GET: Produtos
             public async Task<IActionResult> Index()
             {
-                /* procurar, na base de dados, a lista dos produtos existentes
-              * SELECT *
-              * FROM Produtos a INNER JOIN Categoria c ON a.Categoria = c.Id
-              */
-                var listaProdutos = _bd.Produtos.Include(p => p.Categoria);
+            /* procurar, na base de dados, a lista dos produtos existentes
+          * SELECT *
+          * FROM Produtos a INNER JOIN Categoria c ON a.Categoria = c.Id
+          */
+            var listaProdutos = _bd.Produtos
+                .Include(p => p.Categoria)
+                .Include(p => p.Cores); 
 
-                return View(await listaProdutos.ToListAsync());
+            return View(await listaProdutos.ToListAsync());
             }
 
             // GET: Produtos/Details/5
@@ -301,7 +303,7 @@
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, IFormFile imagemProduto2)
+            public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, int[] listaIdsCores, IFormFile imagemProduto2)
             {
                 if (id != produtos.Id)
                 {
@@ -353,12 +355,41 @@
                         produtoExistente.Categoria.Remove(categoria);
                     }
                 }
-                // Caso nenhuma categoria seja selecionada, mantenha as categorias existentes
 
-                //---------- Para Foto ------------
+            // Atualizar cores
+            if (listaIdsCores != null && listaIdsCores.Length > 0)
+            {
+                var coresSelecionadas = await _bd.Cores
+                    .Where(c => listaIdsCores.Contains(c.Id))
+                    .ToListAsync();
 
-                // vars. auxiliares
-                string nomeFoto = "";
+                // Adicionar cores novas
+                foreach (var cor in coresSelecionadas)
+                {
+                    if (!produtoExistente.Cores.Contains(cor))
+                    {
+                        produtoExistente.Cores.Add(cor);
+                    }
+                }
+
+                // Remover cores que já não estão selecionadas
+                var coresParaRemover = produtoExistente.Cores
+                    .Where(c => !listaIdsCores.Contains(c.Id))
+                    .ToList();
+
+                foreach (var cor in coresParaRemover)
+                {
+                    produtoExistente.Cores.Remove(cor);
+                }
+            }
+
+
+            // Caso nenhuma categoria seja selecionada, mantenha as categorias existentes
+
+            //---------- Para Foto ------------
+
+            // vars. auxiliares
+            string nomeFoto = "";
                 bool existeFoto = false;
 
                 // avaliar se temos condições para tentar adicionar a foto
