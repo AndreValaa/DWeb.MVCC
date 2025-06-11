@@ -101,8 +101,9 @@
             {
                 // obter a lista de professores existentes na BD
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
+                ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
 
-                return View();
+            return View();
             }
 
             // POST: Produtos/Create
@@ -110,7 +111,7 @@
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, IFormFile imagemProduto)
+            public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, int[] listaIdsCores, IFormFile imagemProduto)
             {
 
                 // Encontrar as categorias selecionadas e adicioná-las ao produto
@@ -125,8 +126,21 @@
                     }
                 }
 
-                // vars. auxiliares
-                string nomeFoto = "";
+                // Encontrar as cores selecionadas e adicioná-las ao produto
+
+                var listaCores = new List<Cores>();
+                foreach (var corId in listaIdsCores)
+                {
+                    var cor = _bd.Cores.FirstOrDefault(c => c.Id == corId);
+                    if (cor != null)
+                    {
+                        listaCores.Add(cor);
+                    }
+                }
+                produtos.Cores = listaCores;
+
+            // vars. auxiliares
+            string nomeFoto = "";
                 bool existeFoto = false;
 
                 // avaliar se temos condições para tentar adicionar o produto
