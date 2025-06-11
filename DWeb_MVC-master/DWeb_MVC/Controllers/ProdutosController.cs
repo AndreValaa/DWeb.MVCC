@@ -70,6 +70,7 @@
                 var produtos = await _bd.Produtos
                     .Include(p => p.Categoria)
                     .Include(p => p.Fotos)
+                    .Include(p => p.Cores)
                     .FirstOrDefaultAsync(m => m.Id == id);
                 if (produtos == null)
                 {
@@ -89,6 +90,7 @@
                 var produtos = await _bd.Produtos
                     .Include(p => p.Categoria)
                     .Include(p => p.Fotos)
+                    .Include(p => p.Cores)
                     .FirstOrDefaultAsync(m => m.Nome.Equals(id));
                 if (produtos == null)
                 {
@@ -145,20 +147,27 @@
             string nomeFoto = "";
                 bool existeFoto = false;
 
-                // avaliar se temos condições para tentar adicionar o produto
-                // testar se a Categoria do produto != 0 
-                if (listaCategorias == null)
-                {
-                    // não foi escolhida uma categoria
-                    ModelState.AddModelError("", "É obrigatório escolher uma Categoria.");
-                }
-                else
-                {
-                    produtos.Categoria = listaCategorias;
-                    // se cheguei aqui, escolhi Categoria
-                    // será q escolhi Imagem? Vamos avaliar...
+            // avaliar se temos condições para tentar adicionar o produto
+            // testar se a Categoria do produto != 0 
+            if (listaCategorias == null || listaCategorias.Count == 0)
+            {
+                ModelState.AddModelError("", "É obrigatório escolher uma Categoria.");
+            }
 
-                    if (imagemProduto == null)
+            if (listaCores == null || listaCores.Count == 0)
+            {
+                ModelState.AddModelError("", "É obrigatório escolher pelo menos uma Cor.");
+            }
+
+            // Apenas se ambas forem válidas, atribui
+            if (ModelState.IsValid)
+            {
+                produtos.Categoria = listaCategorias;
+                produtos.Cores = listaCores;
+                // se cheguei aqui, escolhi Categoria
+                // será q escolhi Imagem? Vamos avaliar...
+
+                if (imagemProduto == null)
                     {
                         // o utilizador não fez upload de uma imagem
                         // vamos adicionar uma imagem prédefinida ao produto
@@ -270,7 +279,8 @@
 
                 }
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
-                return View(produtos);
+                ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
+            return View(produtos);
             }
 
             // GET: Produtos/Edit/5
@@ -294,7 +304,9 @@
                 produtos.PrecoAux = Convert.ToString(produtos.Preco);
 
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
-                return View(produtos);
+                ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
+
+            return View(produtos);
             }
 
 
@@ -467,7 +479,8 @@
                 }
 
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
-                return View(produtoExistente);
+                ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
+            return View(produtoExistente);
             }
 
 
