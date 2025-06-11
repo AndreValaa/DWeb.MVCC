@@ -24,13 +24,13 @@ namespace DWeb_MVC.Data {
       public DbSet<Categorias> Categorias { get; set; }
       public DbSet<Fotografias> Fotografias { get; set; }
       public DbSet<DetalhesCompras> DetalhesCompras { get; set; }
+      public DbSet<Cores> Cores { get; set; }
 
-      protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
 	    base.OnModelCreating(modelBuilder);
       }
 
-      public DbSet<DWeb_MVC.Models.Cores> Cores { get; set; }
 
 	}
 }

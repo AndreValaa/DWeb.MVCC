@@ -8,5 +8,7 @@ namespace DWeb_MVC.Models
 
         [StringLength(50)]
         public string Nome { get; set; }
+        public ICollection<Produtos> ListaProdutos { get; set; }
+
     }
 }
