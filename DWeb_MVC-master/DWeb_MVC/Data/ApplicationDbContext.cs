@@ -30,5 +30,7 @@ namespace DWeb_MVC.Data {
 	    base.OnModelCreating(modelBuilder);
       }
 
+      public DbSet<DWeb_MVC.Models.Cores> Cores { get; set; }
+
 	}
 }
