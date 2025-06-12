@@ -48,13 +48,15 @@
             // GET: Produtos
             public async Task<IActionResult> Index()
             {
-                /* procurar, na base de dados, a lista dos produtos existentes
-              * SELECT *
-              * FROM Produtos a INNER JOIN Categoria c ON a.Categoria = c.Id
-              */
-                var listaProdutos = _bd.Produtos.Include(p => p.Categoria);
+            /* procurar, na base de dados, a lista dos produtos existentes
+          * SELECT *
+          * FROM Produtos a INNER JOIN Categoria c ON a.Categoria = c.Id
+          */
+            var listaProdutos = _bd.Produtos
+                .Include(p => p.Categoria)
+                .Include(p => p.Cores); 
 
-                return View(await listaProdutos.ToListAsync());
+            return View(await listaProdutos.ToListAsync());
             }
 
             // GET: Produtos/Details/5
@@ -68,6 +70,7 @@
                 var produtos = await _bd.Produtos
                     .Include(p => p.Categoria)
                     .Include(p => p.Fotos)
+                    .Include(p => p.Cores)
                     .FirstOrDefaultAsync(m => m.Id == id);
                 if (produtos == null)
                 {
@@ -87,6 +90,7 @@
                 var produtos = await _bd.Produtos
                     .Include(p => p.Categoria)
                     .Include(p => p.Fotos)
+                    .Include(p => p.Cores)
                     .FirstOrDefaultAsync(m => m.Nome.Equals(id));
                 if (produtos == null)
                 {
@@ -101,8 +105,9 @@
             {
                 // obter a lista de professores existentes na BD
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
+                ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
 
-                return View();
+            return View();
             }
 
             // POST: Produtos/Create
@@ -110,7 +115,7 @@
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, IFormFile imagemProduto)
+            public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, int[] listaIdsCores, IFormFile imagemProduto)
             {
 
                 // Encontrar as categorias selecionadas e adicioná-las ao produto
@@ -125,24 +130,44 @@
                     }
                 }
 
-                // vars. auxiliares
-                string nomeFoto = "";
+                // Encontrar as cores selecionadas e adicioná-las ao produto
+
+                var listaCores = new List<Cores>();
+                foreach (var corId in listaIdsCores)
+                {
+                    var cor = _bd.Cores.FirstOrDefault(c => c.Id == corId);
+                    if (cor != null)
+                    {
+                        listaCores.Add(cor);
+                    }
+                }
+                produtos.Cores = listaCores;
+
+            // vars. auxiliares
+            string nomeFoto = "";
                 bool existeFoto = false;
 
-                // avaliar se temos condições para tentar adicionar o produto
-                // testar se a Categoria do produto != 0 
-                if (listaCategorias == null)
-                {
-                    // não foi escolhida uma categoria
-                    ModelState.AddModelError("", "É obrigatório escolher uma Categoria.");
-                }
-                else
-                {
-                    produtos.Categoria = listaCategorias;
-                    // se cheguei aqui, escolhi Categoria
-                    // será q escolhi Imagem? Vamos avaliar...
+            // avaliar se temos condições para tentar adicionar o produto
+            // testar se a Categoria do produto != 0 
+            if (listaCategorias == null || listaCategorias.Count == 0)
+            {
+                ModelState.AddModelError("", "É obrigatório escolher uma Categoria.");
+            }
 
-                    if (imagemProduto == null)
+            if (listaCores == null || listaCores.Count == 0)
+            {
+                ModelState.AddModelError("", "É obrigatório escolher pelo menos uma Cor.");
+            }
+
+            // Apenas se ambas forem válidas, atribui
+            if (ModelState.IsValid)
+            {
+                produtos.Categoria = listaCategorias;
+                produtos.Cores = listaCores;
+                // se cheguei aqui, escolhi Categoria
+                // será q escolhi Imagem? Vamos avaliar...
+
+                if (imagemProduto == null)
                     {
                         // o utilizador não fez upload de uma imagem
                         // vamos adicionar uma imagem prédefinida ao produto
@@ -254,7 +279,8 @@
 
                 }
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
-                return View(produtos);
+                ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
+            return View(produtos);
             }
 
             // GET: Produtos/Edit/5
@@ -278,7 +304,9 @@
                 produtos.PrecoAux = Convert.ToString(produtos.Preco);
 
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
-                return View(produtos);
+                ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
+
+            return View(produtos);
             }
 
 
@@ -287,7 +315,7 @@
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, IFormFile imagemProduto2)
+            public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, int[] listaIdsCores, IFormFile imagemProduto2)
             {
                 if (id != produtos.Id)
                 {
@@ -297,6 +325,7 @@
                 // Encontrar o produto existente
                 var produtoExistente = await _bd.Produtos
                     .Include(p => p.Categoria)
+                    .Include(p => p.Cores)
                     .Include(p => p.Fotos)
                     .FirstOrDefaultAsync(p => p.Id == id);
 
@@ -339,12 +368,41 @@
                         produtoExistente.Categoria.Remove(categoria);
                     }
                 }
-                // Caso nenhuma categoria seja selecionada, mantenha as categorias existentes
 
-                //---------- Para Foto ------------
+            // Atualizar cores
+            if (listaIdsCores != null && listaIdsCores.Length > 0)
+            {
+                var coresSelecionadas = await _bd.Cores
+                    .Where(c => listaIdsCores.Contains(c.Id))
+                    .ToListAsync();
 
-                // vars. auxiliares
-                string nomeFoto = "";
+                // Adicionar cores novas
+                foreach (var cor in coresSelecionadas)
+                {
+                    if (!produtoExistente.Cores.Contains(cor))
+                    {
+                        produtoExistente.Cores.Add(cor);
+                    }
+                }
+
+                // Remover cores que já não estão selecionadas
+                var coresParaRemover = produtoExistente.Cores
+                    .Where(c => !listaIdsCores.Contains(c.Id))
+                    .ToList();
+
+                foreach (var cor in coresParaRemover)
+                {
+                    produtoExistente.Cores.Remove(cor);
+                }
+            }
+
+
+            // Caso nenhuma categoria seja selecionada, mantenha as categorias existentes
+
+            //---------- Para Foto ------------
+
+            // vars. auxiliares
+            string nomeFoto = "";
                 bool existeFoto = false;
 
                 // avaliar se temos condições para tentar adicionar a foto
@@ -422,7 +480,8 @@
                 }
 
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
-                return View(produtoExistente);
+                ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
+            return View(produtoExistente);
             }
 
 

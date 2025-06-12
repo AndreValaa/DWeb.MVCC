@@ -52,6 +52,8 @@ namespace DWeb_MVC.Models
         //public Categorias Categoria { get; set; }
         public ICollection<Categorias> Categoria { get; set; }
 
+        public ICollection<Cores> Cores { get; set; }
+
 
         public ICollection<DetalhesCompras> DetalhesCompras { get; set; }
 	}
