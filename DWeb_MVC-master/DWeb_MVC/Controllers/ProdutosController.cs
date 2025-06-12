@@ -325,6 +325,7 @@
                 // Encontrar o produto existente
                 var produtoExistente = await _bd.Produtos
                     .Include(p => p.Categoria)
+                    .Include(p => p.Cores)
                     .Include(p => p.Fotos)
                     .FirstOrDefaultAsync(p => p.Id == id);
 
