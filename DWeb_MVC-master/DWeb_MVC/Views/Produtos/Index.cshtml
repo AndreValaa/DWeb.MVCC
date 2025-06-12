@@ -24,6 +24,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Categoria)
             </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.Cores)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -47,6 +50,14 @@
                     <br />
                 }
             </td>
+            <td>
+    @foreach (var cor in item.Cores)
+    {
+        <span>@cor.Nome</span>
+        <br />
+    }
+</td>
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
