@@ -1,27 +1,124 @@
-﻿@{
+﻿@model List<DWeb_MVC.Models.Produtos>
+
+
+@{
+    ViewData["Title"] = "Página Inicial";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
 }
 
-<div id="carouselLoja" class="carousel slide" data-bs-ride="carousel" data-bs-interval="10000">
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <img src="~/imagens/carrosel/LogoGoldStirrup.png" alt="Imagem 1">
+<div id="hero-section">
+    <div id="carouselLoja" class="carousel slide" data-bs-ride="carousel" data-bs-interval="9000">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="~/imagens/carrosel/LogoGoldStirrup.png" alt="Imagem 1">
+            </div>
+            <div class="carousel-item">
+                <img src="~/imagens/carrosel/CarrosselImage2.png" alt="Imagem 2">
+            </div>
         </div>
-        <div class="carousel-item">
-            <img src="~/imagens/carrosel/cavaloimagem.png" alt="Imagem 2">
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselLoja" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselLoja" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+            <span class="visually-hidden">Seguinte</span>
+        </button>
+    </div>
+</div>
+
+<section class="categoria-bloco my-5 py-4 px-3 bg-white shadow rounded">
+    <div class="container">
+        <h2 class="mb-3">Cavalo</h2>
+        <p class="mb-4 text-muted">
+            Na equitação a relação entre cavalo e cavaleiro é essencial,
+            para tal deverá escolher os melhores produtos. Isto irá permitir-lhe passar um
+            momento priveligiado com o seu cavalo, em segurança total, e ao mesmo tempo prevenir ferimentos ao seu cavalo.
+        </p>
+
+        <div class="row">
+            @foreach (var produto in Model.Where(p => p.Categoria.Any(c => c.Nome == "Cavalo"))
+            .OrderBy(p => Guid.NewGuid())
+            .Take(3))
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")" class="card-img-top" alt="@produto.Nome">
+                        <div class="card-body">
+                            <h5 class="card-title">@produto.Nome</h5>
+                            <p class="card-text">@produto.Marca</p>
+                            <p class="card-text"><strong>@produto.Preco.ToString("C")</strong></p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="#" class="btn btn-outline-primary">Ver todos os Produtos</a>
         </div>
     </div>
+</section>
 
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselLoja" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-        <span class="visually-hidden">Anterior</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselLoja" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-        <span class="visually-hidden">Seguinte</span>
-    </button>
-</div>
+<section class="categoria-bloco my-5 py-4 px-3 bg-white shadow rounded">
+    <div class="container">
+        <h2 class="mb-3">Cavaleiro</h2>
+        <p class="mb-4 text-muted">
+            Proteja-se com conforto e elegância. Aqui encontra os melhores equipamentos para o cavaleiro.
+        </p>
 
-<div class="mt-4 text-center">
-    <a href="@Url.Action("UserProdutos", "Home")" class="btn btn-success">Ver Produtos</a>
-</div>
+        <div class="row">
+            @foreach (var produto in Model.Where(p => p.Categoria.Any(c => c.Nome == "Cavaleiro"))
+            .OrderBy(p => Guid.NewGuid())
+            .Take(3))
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")" class="card-img-top" alt="@produto.Nome">
+                        <div class="card-body">
+                            <h5 class="card-title">@produto.Nome</h5>
+                            <p class="card-text">@produto.Marca</p>
+                            <p class="card-text"><strong>@produto.Preco.ToString("C")</strong></p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="#" class="btn btn-outline-primary">Ver todos os Produtos</a>
+        </div>
+    </div>
+</section>
+
+<section class="categoria-bloco my-5 py-4 px-3 bg-white shadow rounded">
+    <div class="container">
+        <h2 class="mb-3">Estábulo</h2>
+        <p class="mb-4 text-muted">
+            Organização, higiene e bem-estar para o seu cavalo e o seu espaço. Descubra o melhor para o estábulo.
+        </p>
+
+        <div class="row">
+            @foreach (var produto in Model.Where(p => p.Categoria.Any(c => c.Nome == "Estábulo"))
+            .OrderBy(p => Guid.NewGuid())
+            .Take(3))
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")" class="card-img-top" alt="@produto.Nome">
+                        <div class="card-body">
+                            <h5 class="card-title">@produto.Nome</h5>
+                            <p class="card-text">@produto.Marca</p>
+                            <p class="card-text"><strong>@produto.Preco.ToString("C")</strong></p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="#" class="btn btn-outline-primary">Ver todos os Produtos</a>
+        </div>
+    </div>
+</section>

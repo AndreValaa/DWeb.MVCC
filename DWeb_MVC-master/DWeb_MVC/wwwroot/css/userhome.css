@@ -1,14 +1,28 @@
 ﻿html, body {
-    height: 100%;
     margin: 0;
     padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1f1008; /* Castanho escuro do banner */
     overflow-x: hidden;
-    overflow-y: hidden; 
+    scroll-behavior: smooth;
+    height: 100%;
+    color: #ffffff;
+}
+
+#hero-section {
+    height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
 }
 
 #carouselLoja {
-    width: 100vw;
-    height: calc(100vh - 150px); 
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
     overflow: hidden;
 }
 
@@ -21,6 +35,55 @@
     .carousel-item img {
         width: 100%;
         height: 100%;
-        object-fit: fill;
         display: block;
+        object-fit: cover;
     }
+
+/* Bloco castanho */
+.categoria-bloco {
+    background-color: #3a250e;
+    border-left: 6px solid #A0522D;
+    padding: 2rem 1.5rem;
+    color: white;
+}
+
+    /* Título e parágrafos */
+    .categoria-bloco h2 {
+        color: #000000;
+    }
+
+
+    /* Cartões dos produtos */
+    .categoria-bloco .card {
+        background-color: #ffffff;
+        color: #000000;
+        border-radius: 8px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .categoria-bloco .card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+  
+
+    .categoria-bloco .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+
+   
+    .categoria-bloco .btn-outline-primary {
+        background-color: #ffffff;
+        color: #3a250e;
+        border-color: #ffffff;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .categoria-bloco .btn-outline-primary:hover {
+            background-color: #3a250e;
+            color: #ffffff;
+            border-color: #ffffff;
+        }

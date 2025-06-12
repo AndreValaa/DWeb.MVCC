@@ -22,7 +22,12 @@ namespace DWeb_MVC.Controllers
 
         public async Task<IActionResult> UserHome()
         {
-            return View();
+            var listaProdutos = await _bd.Produtos
+                .Include(p => p.Categoria)
+                .Include(p => p.Fotos)
+                .ToListAsync();
+
+            return View(listaProdutos);
         }
 
         public async Task<IActionResult> UserProdutos()
