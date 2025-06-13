@@ -55,6 +55,8 @@ namespace DWeb_MVC.Models
         public ICollection<Cores> Cores { get; set; }
 
 
+        public ICollection<Tamanhos> Tamanhos { get; set; }
+
         public ICollection<DetalhesCompras> DetalhesCompras { get; set; }
 	}
 }
