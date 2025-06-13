@@ -26,14 +26,10 @@ namespace DWeb_MVC.Data {
       public DbSet<DetalhesCompras> DetalhesCompras { get; set; }
       public DbSet<Cores> Cores { get; set; }
 
-      public DbSet<Cores> Tamanhos { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
 	    base.OnModelCreating(modelBuilder);
       }
-
-        public DbSet<DWeb_MVC.Models.Tamanhos> Tamanhos_1 { get; set; }
 
 
 	}
