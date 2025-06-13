@@ -27,43 +27,56 @@
             <th>
                 @Html.DisplayNameFor(Model => Model.Cores)
             </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.Tamanhos)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Marca)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Preco)€
-            </td>
-            <td>
-                @foreach (var cat in item.Categoria)
-                {
-                    <span>@cat.Nome</span>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Marca)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Preco)€
+                </td>
+                <td>
+                    @foreach (var cat in item.Categoria)
+                    {
+                        <span>@cat.Nome</span>
 
-                    <br />
-                }
-            </td>
-            <td>
-    @foreach (var cor in item.Cores)
-    {
-        <span>@cor.Nome</span>
-        <br />
-    }
-</td>
+                        <br />
+                    }
+                </td>
+                <td>
+                    @foreach (var cor in item.Cores)
+                    {
+                        <span>@cor.Nome</span>
 
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+                        <br />
+                    }
+                </td>
+                <td>
+                    @foreach (var tamanho in item.Tamanhos)
+                    {
+                        <span>@tamanho.Nome</span>
+
+                        <br />
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
+
 </table>

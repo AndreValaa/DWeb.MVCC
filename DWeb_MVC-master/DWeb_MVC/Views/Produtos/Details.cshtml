@@ -31,11 +31,36 @@
             @Html.DisplayFor(model => model.Preco)
         </dd>
 
+
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Categoria)
         </dt>
         <dd class="col-sm-10">
             @foreach (var cat in Model.Categoria)
+            {
+                <span>@cat.Nome</span>
+
+                <br />
+            }
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Cores)
+        </dt>
+        <dd class="col-sm-10">
+            @foreach (var cat in Model.Cores)
+            {
+                <span>@cat.Nome</span>
+
+                <br />
+            }
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Tamanhos)
+        </dt>
+        <dd class="col-sm-10">
+            @foreach (var cat in Model.Tamanhos)
             {
                 <span>@cat.Nome</span>
 
