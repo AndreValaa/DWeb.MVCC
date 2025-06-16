@@ -1,0 +1,26 @@
+﻿@model DWeb_MVC.Models.Grupos
+
+@{
+    ViewData["Title"] = "Eliminar Grupo";
+}
+
+<h1 class="mb-4 text-danger">Tem a certeza que pretende eliminar este grupo?</h1>
+
+<div class="mb-3">
+    <strong>Nome:</strong> @Model.Nome
+</div>
+
+<form asp-action="DeleteConfirmed">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group mt-3">
+        <input type="submit" value="Eliminar" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+    </div>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="text-danger mt-3">
+        @Html.ValidationSummary()
+    </div>
+}

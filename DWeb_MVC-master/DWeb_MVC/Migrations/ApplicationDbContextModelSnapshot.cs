@@ -60,11 +60,16 @@ namespace DWeb_MVC.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("GruposId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nome")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GruposId");
 
                     b.ToTable("Categorias");
                 });
@@ -197,6 +202,24 @@ namespace DWeb_MVC.Migrations
                     b.HasIndex("ProdutoFK");
 
                     b.ToTable("Fotografias");
+                });
+
+            modelBuilder.Entity("DWeb_MVC.Models.Grupos", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Grupos");
                 });
 
             modelBuilder.Entity("DWeb_MVC.Models.Produtos", b =>
@@ -487,6 +510,17 @@ namespace DWeb_MVC.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("DWeb_MVC.Models.Categorias", b =>
+                {
+                    b.HasOne("DWeb_MVC.Models.Grupos", "Grupos")
+                        .WithMany("ListaCategorias")
+                        .HasForeignKey("GruposId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Grupos");
+                });
+
             modelBuilder.Entity("DWeb_MVC.Models.Compras", b =>
                 {
                     b.HasOne("DWeb_MVC.Models.Clientes", "Cliente")
@@ -600,6 +634,11 @@ namespace DWeb_MVC.Migrations
             modelBuilder.Entity("DWeb_MVC.Models.Compras", b =>
                 {
                     b.Navigation("DetalhesCompras");
+                });
+
+            modelBuilder.Entity("DWeb_MVC.Models.Grupos", b =>
+                {
+                    b.Navigation("ListaCategorias");
                 });
 
             modelBuilder.Entity("DWeb_MVC.Models.Produtos", b =>

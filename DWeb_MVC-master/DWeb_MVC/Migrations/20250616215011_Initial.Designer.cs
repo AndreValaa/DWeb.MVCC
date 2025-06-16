@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DWeb_MVC.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240918100912_updatemig")]
-    partial class updatemig
+    [Migration("20250616215011_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.18")
+                .HasAnnotation("ProductVersion", "7.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -40,6 +40,21 @@ namespace DWeb_MVC.Migrations
                     b.ToTable("CategoriasProdutos");
                 });
 
+            modelBuilder.Entity("CoresProdutos", b =>
+                {
+                    b.Property<int>("CoresId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ListaProdutosId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CoresId", "ListaProdutosId");
+
+                    b.HasIndex("ListaProdutosId");
+
+                    b.ToTable("CoresProdutos");
+                });
+
             modelBuilder.Entity("DWeb_MVC.Models.Categorias", b =>
                 {
                     b.Property<int>("Id")
@@ -48,11 +63,16 @@ namespace DWeb_MVC.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("GruposId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nome")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GruposId");
 
                     b.ToTable("Categorias");
                 });
@@ -119,6 +139,23 @@ namespace DWeb_MVC.Migrations
                     b.ToTable("Compras");
                 });
 
+            modelBuilder.Entity("DWeb_MVC.Models.Cores", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nome")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cores");
+                });
+
             modelBuilder.Entity("DWeb_MVC.Models.DetalhesCompras", b =>
                 {
                     b.Property<int>("CompraFK")
@@ -170,6 +207,24 @@ namespace DWeb_MVC.Migrations
                     b.ToTable("Fotografias");
                 });
 
+            modelBuilder.Entity("DWeb_MVC.Models.Grupos", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Grupos");
+                });
+
             modelBuilder.Entity("DWeb_MVC.Models.Produtos", b =>
                 {
                     b.Property<int>("Id")
@@ -192,6 +247,23 @@ namespace DWeb_MVC.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Produtos");
+                });
+
+            modelBuilder.Entity("DWeb_MVC.Models.Tamanhos", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nome")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tamanhos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -396,6 +468,21 @@ namespace DWeb_MVC.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ProdutosTamanhos", b =>
+                {
+                    b.Property<int>("ListaProdutosId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TamanhosId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ListaProdutosId", "TamanhosId");
+
+                    b.HasIndex("TamanhosId");
+
+                    b.ToTable("ProdutosTamanhos");
+                });
+
             modelBuilder.Entity("CategoriasProdutos", b =>
                 {
                     b.HasOne("DWeb_MVC.Models.Categorias", null)
@@ -409,6 +496,32 @@ namespace DWeb_MVC.Migrations
                         .HasForeignKey("ListaProdutosId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CoresProdutos", b =>
+                {
+                    b.HasOne("DWeb_MVC.Models.Cores", null)
+                        .WithMany()
+                        .HasForeignKey("CoresId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DWeb_MVC.Models.Produtos", null)
+                        .WithMany()
+                        .HasForeignKey("ListaProdutosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DWeb_MVC.Models.Categorias", b =>
+                {
+                    b.HasOne("DWeb_MVC.Models.Grupos", "Grupos")
+                        .WithMany("ListaCategorias")
+                        .HasForeignKey("GruposId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Grupos");
                 });
 
             modelBuilder.Entity("DWeb_MVC.Models.Compras", b =>
@@ -501,6 +614,21 @@ namespace DWeb_MVC.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ProdutosTamanhos", b =>
+                {
+                    b.HasOne("DWeb_MVC.Models.Produtos", null)
+                        .WithMany()
+                        .HasForeignKey("ListaProdutosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DWeb_MVC.Models.Tamanhos", null)
+                        .WithMany()
+                        .HasForeignKey("TamanhosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DWeb_MVC.Models.Clientes", b =>
                 {
                     b.Navigation("Compras");
@@ -509,6 +637,11 @@ namespace DWeb_MVC.Migrations
             modelBuilder.Entity("DWeb_MVC.Models.Compras", b =>
                 {
                     b.Navigation("DetalhesCompras");
+                });
+
+            modelBuilder.Entity("DWeb_MVC.Models.Grupos", b =>
+                {
+                    b.Navigation("ListaCategorias");
                 });
 
             modelBuilder.Entity("DWeb_MVC.Models.Produtos", b =>

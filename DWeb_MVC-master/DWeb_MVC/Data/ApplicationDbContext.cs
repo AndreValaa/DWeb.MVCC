@@ -25,8 +25,9 @@ namespace DWeb_MVC.Data {
       public DbSet<Fotografias> Fotografias { get; set; }
       public DbSet<DetalhesCompras> DetalhesCompras { get; set; }
       public DbSet<Cores> Cores { get; set; }
+      public DbSet<Grupos> Grupos { get; set; }
 
-      public DbSet<Tamanhos> Tamanhos { get; set; }
+        public DbSet<Tamanhos> Tamanhos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
