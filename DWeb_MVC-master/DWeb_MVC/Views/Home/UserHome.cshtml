@@ -1,6 +1,5 @@
 ﻿@model List<DWeb_MVC.Models.Produtos>
 
-
 @{
     ViewData["Title"] = "Página Inicial";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
@@ -28,97 +27,84 @@
     </div>
 </div>
 
-<section class="categoria-bloco my-5 py-4 px-3 bg-white shadow rounded">
-    <div class="container">
-        <h2 class="mb-3">Cavalo</h2>
-        <p class="mb-4 text-muted">
-            Na equitação a relação entre cavalo e cavaleiro é essencial,
-            para tal deverá escolher os melhores produtos. Isto irá permitir-lhe passar um
-            momento priveligiado com o seu cavalo, em segurança total, e ao mesmo tempo prevenir ferimentos ao seu cavalo.
-        </p>
+@foreach (var categoria in new[] { "Cavalo", "Cavaleiro", "Estábulo" })
+{
+    <section class="categoria-bloco my-5 py-4 px-3 bg-white shadow rounded">
+        <div class="container">
+            <h2 class="mb-3">@categoria</h2>
+            <p class="mb-4 text-muted">
+                @(categoria == "Cavalo" ? "Na equitação a relação entre cavalo e cavaleiro é essencial, para tal deverá escolher os melhores produtos. Isto irá permitir-lhe passar um momento priveligiado com o seu cavalo, em segurança total, e ao mesmo tempo prevenir ferimentos ao seu cavalo."
+                    : categoria == "Cavaleiro" ? "Proteja-se com conforto e elegância. Aqui encontra os melhores equipamentos para o cavaleiro."
+                    : "Organização, higiene e bem-estar para o seu cavalo e o seu espaço. Descubra o melhor para o estábulo.")
+            </p>
 
-        <div class="row">
-            @foreach (var produto in Model.Where(p => p.Categoria.Any(c => c.Nome == "Cavalo"))
-            .OrderBy(p => Guid.NewGuid())
-            .Take(3))
-            {
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <img src="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")" class="card-img-top" alt="@produto.Nome">
-                        <div class="card-body">
-                            <h5 class="card-title">@produto.Nome</h5>
-                            <p class="card-text">@produto.Marca</p>
-                            <p class="card-text"><strong>@produto.Preco.ToString("C")</strong></p>
+            <div class="row">
+                @foreach (var produto in Model.Where(p => p.Categoria.Any(c => c.Nome == categoria)).OrderBy(p => Guid.NewGuid()).Take(3))
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 produto-card"
+                             data-bs-toggle="modal"
+                             data-bs-target="#produtoModal"
+                             data-nome="@produto.Nome"
+                             data-marca="@produto.Marca"
+                             data-preco="@produto.Preco.ToString("C")"
+                             data-categoria="@string.Join(", ", produto.Categoria.Select(c => c.Nome))"
+                             data-imagem="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")">
+                            <img src="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")" class="card-img-top" alt="@produto.Nome" />
+                            <div class="card-body">
+                                <h5 class="card-title">@produto.Nome</h5>
+                                <p class="card-text">@produto.Marca</p>
+                                <p class="card-text"><strong>@produto.Preco.ToString("C")</strong></p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
+
+            <div class="text-center mt-3">
+                <a href="#" class="btn btn-outline-primary">Ver todos os Produtos</a>
+            </div>
         </div>
+    </section>
+}
 
-        <div class="text-center mt-3">
-            <a href="#" class="btn btn-outline-primary">Ver todos os Produtos</a>
-        </div>
-    </div>
-</section>
-
-<section class="categoria-bloco my-5 py-4 px-3 bg-white shadow rounded">
-    <div class="container">
-        <h2 class="mb-3">Cavaleiro</h2>
-        <p class="mb-4 text-muted">
-            Proteja-se com conforto e elegância. Aqui encontra os melhores equipamentos para o cavaleiro.
-        </p>
-
-        <div class="row">
-            @foreach (var produto in Model.Where(p => p.Categoria.Any(c => c.Nome == "Cavaleiro"))
-            .OrderBy(p => Guid.NewGuid())
-            .Take(3))
-            {
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <img src="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")" class="card-img-top" alt="@produto.Nome">
-                        <div class="card-body">
-                            <h5 class="card-title">@produto.Nome</h5>
-                            <p class="card-text">@produto.Marca</p>
-                            <p class="card-text"><strong>@produto.Preco.ToString("C")</strong></p>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-
-        <div class="text-center mt-3">
-            <a href="#" class="btn btn-outline-primary">Ver todos os Produtos</a>
+<!-- pop up produto -->
+<div class="modal fade" id="produtoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background-color: #3a250e; color: #fff;">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalhes do Produto</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImagem" src="" alt="Imagem Produto" class="img-fluid mb-3" />
+                <p><strong>Nome:</strong> <span id="modalNome"></span></p>
+                <p><strong>Marca:</strong> <span id="modalMarca"></span></p>
+                <p><strong>Preço:</strong> <span id="modalPreco"></span></p>
+                <p><strong>Categoria:</strong> <span id="modalCategoria"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light">Adicionar ao Carrinho</button>
+            </div>
         </div>
     </div>
-</section>
+</div>
 
-<section class="categoria-bloco my-5 py-4 px-3 bg-white shadow rounded">
-    <div class="container">
-        <h2 class="mb-3">Estábulo</h2>
-        <p class="mb-4 text-muted">
-            Organização, higiene e bem-estar para o seu cavalo e o seu espaço. Descubra o melhor para o estábulo.
-        </p>
+<script>
+    const produtoModal = document.getElementById('produtoModal');
+    produtoModal.addEventListener('show.bs.modal', function (event) {
+        const card = event.relatedTarget;
 
-        <div class="row">
-            @foreach (var produto in Model.Where(p => p.Categoria.Any(c => c.Nome == "Estábulo"))
-            .OrderBy(p => Guid.NewGuid())
-            .Take(3))
-            {
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <img src="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")" class="card-img-top" alt="@produto.Nome">
-                        <div class="card-body">
-                            <h5 class="card-title">@produto.Nome</h5>
-                            <p class="card-text">@produto.Marca</p>
-                            <p class="card-text"><strong>@produto.Preco.ToString("C")</strong></p>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
+        const nome = card.getAttribute('data-nome');
+        const marca = card.getAttribute('data-marca');
+        const preco = card.getAttribute('data-preco');
+        const categoria = card.getAttribute('data-categoria');
+        const imagem = card.getAttribute('data-imagem').replace('~', '');
 
-        <div class="text-center mt-3">
-            <a href="#" class="btn btn-outline-primary">Ver todos os Produtos</a>
-        </div>
-    </div>
-</section>
+        document.getElementById('modalNome').textContent = nome;
+        document.getElementById('modalMarca').textContent = marca;
+        document.getElementById('modalPreco').textContent = preco;
+        document.getElementById('modalCategoria').textContent = categoria;
+        document.getElementById('modalImagem').src = imagem;
+    });
+</script>

@@ -2,7 +2,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1f1008; /* Castanho escuro do banner */
+    background-color: #1f1008;
     overflow-x: hidden;
     scroll-behavior: smooth;
     height: 100%;
@@ -39,7 +39,6 @@
         object-fit: cover;
     }
 
-/* Bloco castanho */
 .categoria-bloco {
     background-color: #3a250e;
     border-left: 6px solid #A0522D;
@@ -47,18 +46,19 @@
     color: white;
 }
 
-    /* Título e parágrafos */
     .categoria-bloco h2 {
         color: #000000;
     }
 
-
-    /* Cartões dos produtos */
     .categoria-bloco .card {
         background-color: #ffffff;
         color: #000000;
         border-radius: 8px;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%; /* Garante altura consistente */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
         .categoria-bloco .card:hover {
@@ -66,14 +66,12 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
 
-  
-
     .categoria-bloco .card-img-top {
         height: 200px;
-        object-fit: cover;
+        object-fit: contain;
+        padding: 0.5rem;
     }
 
-   
     .categoria-bloco .btn-outline-primary {
         background-color: #ffffff;
         color: #3a250e;
@@ -87,3 +85,17 @@
             color: #ffffff;
             border-color: #ffffff;
         }
+
+.modal-footer {
+    display: flex;
+    justify-content: center;
+}
+
+#produtoModal img {
+    width: 100%;
+    max-width: 400px; 
+    height: 300px; 
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+}
