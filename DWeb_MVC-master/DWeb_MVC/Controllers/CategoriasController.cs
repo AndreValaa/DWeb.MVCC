@@ -36,9 +36,11 @@ namespace DWeb_MVC.Controllers
         // GET: Categorias
         public async Task<IActionResult> Index()
         {
-              return _context.Categorias != null ? 
-                          View(await _context.Categorias.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Categorias'  is null.");
+            var categorias = await _context.Categorias
+                                  .Include(c => c.Grupos)
+                                  .ToListAsync();
+
+            return View(categorias);
         }
 
         // GET: Categorias/Details/5
