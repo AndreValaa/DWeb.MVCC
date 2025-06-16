@@ -54,7 +54,9 @@
           */
             var listaProdutos = _bd.Produtos
                 .Include(p => p.Categoria)
-                .Include(p => p.Cores); 
+                .Include(p => p.Cores)
+                .Include(p => p.Tamanhos);
+
 
             return View(await listaProdutos.ToListAsync());
             }
@@ -71,6 +73,7 @@
                     .Include(p => p.Categoria)
                     .Include(p => p.Fotos)
                     .Include(p => p.Cores)
+                    .Include(p => p.Tamanhos)
                     .FirstOrDefaultAsync(m => m.Id == id);
                 if (produtos == null)
                 {
@@ -91,6 +94,7 @@
                     .Include(p => p.Categoria)
                     .Include(p => p.Fotos)
                     .Include(p => p.Cores)
+                    .Include(p => p.Tamanhos)
                     .FirstOrDefaultAsync(m => m.Nome.Equals(id));
                 if (produtos == null)
                 {
@@ -106,6 +110,7 @@
                 // obter a lista de professores existentes na BD
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
                 ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
+                ViewData["ListaTamanhos"] = _bd.Tamanhos.OrderBy(c => c.Nome).ToList();
 
             return View();
             }
@@ -115,7 +120,7 @@
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, int[] listaIdsCores, IFormFile imagemProduto)
+            public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, int[] listaIdsCores, int[] listaIdsTamanhos, IFormFile imagemProduto)
             {
 
                 // Encontrar as categorias selecionadas e adicioná-las ao produto
@@ -143,6 +148,17 @@
                 }
                 produtos.Cores = listaCores;
 
+            var listaTamanhos = new List<Tamanhos>();
+            foreach (var tamanhoId in listaIdsTamanhos)
+            {
+                var tamanho = _bd.Tamanhos.FirstOrDefault(c => c.Id == tamanhoId);
+                if (tamanho != null)
+                {
+                    listaTamanhos.Add(tamanho);
+                }
+            }
+            produtos.Tamanhos = listaTamanhos;
+
             // vars. auxiliares
             string nomeFoto = "";
                 bool existeFoto = false;
@@ -159,11 +175,17 @@
                 ModelState.AddModelError("", "É obrigatório escolher pelo menos uma Cor.");
             }
 
+            if (listaTamanhos == null || listaTamanhos.Count == 0)
+            {
+                ModelState.AddModelError("", "É obrigatório escolher pelo menos um Tamanho.");
+            }
+
             // Apenas se ambas forem válidas, atribui
             if (ModelState.IsValid)
             {
                 produtos.Categoria = listaCategorias;
                 produtos.Cores = listaCores;
+                produtos.Tamanhos = listaTamanhos;
                 // se cheguei aqui, escolhi Categoria
                 // será q escolhi Imagem? Vamos avaliar...
 
@@ -280,6 +302,7 @@
                 }
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
                 ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
+                ViewData["ListaTamanhos"] = _bd.Tamanhos.OrderBy(c => c.Nome).ToList();
             return View(produtos);
             }
 
@@ -305,6 +328,7 @@
 
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
                 ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
+                ViewData["ListaTamanhos"] = _bd.Tamanhos.OrderBy(c => c.Nome).ToList();
 
             return View(produtos);
             }
@@ -315,7 +339,7 @@
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, int[] listaIdsCores, IFormFile imagemProduto2)
+            public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Marca,Preco,PrecoAux")] Produtos produtos, int[] listaIdsCategorias, int[] listaIdsCores, int[] listaIdsTamanhos, IFormFile imagemProduto2)
             {
                 if (id != produtos.Id)
                 {
@@ -326,6 +350,7 @@
                 var produtoExistente = await _bd.Produtos
                     .Include(p => p.Categoria)
                     .Include(p => p.Cores)
+                    .Include(p => p.Tamanhos)
                     .Include(p => p.Fotos)
                     .FirstOrDefaultAsync(p => p.Id == id);
 
@@ -385,6 +410,8 @@
                     }
                 }
 
+
+
                 // Remover cores que já não estão selecionadas
                 var coresParaRemover = produtoExistente.Cores
                     .Where(c => !listaIdsCores.Contains(c.Id))
@@ -393,6 +420,35 @@
                 foreach (var cor in coresParaRemover)
                 {
                     produtoExistente.Cores.Remove(cor);
+                }
+            }
+
+            //atualizar tamanhos
+            if (listaIdsTamanhos != null && listaIdsTamanhos.Length > 0)
+            {
+                var TamanhosSelecionados = await _bd.Tamanhos
+                    .Where(c => listaIdsTamanhos.Contains(c.Id))
+                    .ToListAsync();
+
+                // Adicionar cores novas
+                foreach (var tamanho in TamanhosSelecionados)
+                {
+                    if (!produtoExistente.Tamanhos.Contains(tamanho))
+                    {
+                        produtoExistente.Tamanhos.Add(tamanho);
+                    }
+                }
+
+
+
+                // Remover tamanhos que já não estão selecionadas
+                var tamanhosParaRemover = produtoExistente.Tamanhos
+                    .Where(c => !listaIdsTamanhos.Contains(c.Id))
+                    .ToList();
+
+                foreach (var tamanho in tamanhosParaRemover)
+                {
+                    produtoExistente.Tamanhos.Remove(tamanho);
                 }
             }
 
@@ -481,6 +537,7 @@
 
                 ViewData["ListaCat"] = _bd.Categorias.OrderBy(c => c.Nome).ToList();
                 ViewData["ListaCores"] = _bd.Cores.OrderBy(c => c.Nome).ToList();
+                ViewData["ListaTamanhos"] = _bd.Tamanhos.OrderBy(c => c.Nome).ToList();
             return View(produtoExistente);
             }
 
