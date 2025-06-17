@@ -103,6 +103,7 @@ namespace DWeb_MVC.Controllers
             {
                 return NotFound();
             }
+            ViewData["ListaGrupos"] = new SelectList(_context.Grupos, "Id", "Nome", categorias.GruposId);
             return View(categorias);
         }
 
@@ -111,7 +112,7 @@ namespace DWeb_MVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome")] Categorias categorias)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome, GruposId")] Categorias categorias)
         {
             if (id != categorias.Id)
             {
