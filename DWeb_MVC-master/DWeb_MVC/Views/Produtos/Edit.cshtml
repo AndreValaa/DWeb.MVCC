@@ -42,7 +42,7 @@
                          alt="fotografia do(a) @Model.Nome"
                          title="@Model.Nome no @foto.Local em @foto.Data"
                          width="200px" />
-                    <button type="button" class="btn btn-danger" onclick="deletePhoto(@foto.Id)">Delete</button>
+                    <button type="button" class="btn btn-danger" onclick="deletePhoto(@foto.Id)">Eliminar</button>
                 </div>
                 <br>
             }
@@ -99,14 +99,14 @@
 
             <br>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Guardar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Voltar à lista</a>
 </div>
 
 @section Scripts {
