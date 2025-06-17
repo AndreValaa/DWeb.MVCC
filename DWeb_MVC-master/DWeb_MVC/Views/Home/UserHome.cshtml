@@ -32,7 +32,14 @@
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown_@grupo.Key">
                             @foreach (var categoria in grupo.Value)
                             {
-                                <li><a class="dropdown-item" href="#">@categoria</a></li> <!-- Link futuro opcional -->
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="Home"
+                                       asp-action="ProdutosPorCategoria"
+                                       asp-route-categoria="@categoria">
+                                        @categoria
+                                    </a>
+                                </li>
                             }
                         </ul>
                     </li>

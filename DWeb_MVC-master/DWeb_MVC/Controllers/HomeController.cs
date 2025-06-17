@@ -46,6 +46,22 @@ namespace DWeb_MVC.Controllers
             return View(produtos);
         }
 
+        public async Task<IActionResult> ProdutosPorCategoria(string categoria)
+        {
+            if (string.IsNullOrEmpty(categoria)) return NotFound();
+
+            var produtos = await _bd.Produtos
+                .Include(p => p.Categoria)
+                    .ThenInclude(c => c.Grupos)
+                .Include(p => p.Fotos)
+                .Where(p => p.Categoria.Any(c => c.Nome == categoria))
+                .ToListAsync();
+
+            ViewBag.Categoria = categoria;
+            return View(produtos);
+        }
+
+
 
         public async Task<IActionResult> UserProdutos()
         {
