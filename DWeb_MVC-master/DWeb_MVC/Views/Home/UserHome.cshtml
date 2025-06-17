@@ -3,16 +3,23 @@
 @{
     ViewData["Title"] = "Página Inicial";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+
+    var grupos = new Dictionary<string, int>
+    {
+        { "Cavalo", 1 },
+        { "Cavaleiro", 2 },
+        { "Estábulo", 3 }
+    };
 }
 
 <div id="hero-section">
     <div id="carouselLoja" class="carousel slide" data-bs-ride="carousel" data-bs-interval="9000">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="~/imagens/carrosel/LogoGoldStirrup.png" alt="Imagem 1">
+                <img src="~/imagens/carrosel/LogoGoldStirrup.png" alt="Imagem 1" />
             </div>
             <div class="carousel-item">
-                <img src="~/imagens/carrosel/CarrosselImage2.png" alt="Imagem 2">
+                <img src="~/imagens/carrosel/CarrosselImage2.png" alt="Imagem 2" />
             </div>
         </div>
 
@@ -27,43 +34,55 @@
     </div>
 </div>
 
-@foreach (var categoria in new[] { "Cavalo", "Cavaleiro", "Estábulo" })
+@foreach (var grupo in grupos)
 {
+    var produtosDoGrupo = Model
+        .Where(p => p.Categoria != null && p.Categoria.Any(c => c.GruposId == grupo.Value))
+        .OrderBy(p => Guid.NewGuid()) 
+        .Take(3)
+        .ToList(); 
+
     <section class="categoria-bloco my-5 py-4 px-3 bg-white shadow rounded">
         <div class="container">
-            <h2 class="mb-3">@categoria</h2>
+            <h2 class="mb-3">@grupo.Key</h2>
             <p class="mb-4 text-muted">
-                @(categoria == "Cavalo" ? "Na equitação a relação entre cavalo e cavaleiro é essencial, para tal deverá escolher os melhores produtos. Isto irá permitir-lhe passar um momento priveligiado com o seu cavalo, em segurança total, e ao mesmo tempo prevenir ferimentos ao seu cavalo."
-                    : categoria == "Cavaleiro" ? "Proteja-se com conforto e elegância. Aqui encontra os melhores equipamentos para o cavaleiro."
-                    : "Organização, higiene e bem-estar para o seu cavalo e o seu espaço. Descubra o melhor para o estábulo.")
+                @(grupo.Key == "Cavalo" ? "Na equitação a relação entre cavalo e cavaleiro é essencial..."
+                    : grupo.Key == "Cavaleiro" ? "Proteja-se com conforto e elegância..."
+                    : "Organização, higiene e bem-estar para o seu cavalo e o seu espaço...")
             </p>
 
-            <div class="row">
-                @foreach (var produto in Model.Where(p => p.Categoria.Any(c => c.Nome == categoria)).OrderBy(p => Guid.NewGuid()).Take(3))
-                {
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 produto-card"
-                             data-bs-toggle="modal"
-                             data-bs-target="#produtoModal"
-                             data-nome="@produto.Nome"
-                             data-marca="@produto.Marca"
-                             data-preco="@produto.Preco.ToString("C")"
-                             data-categoria="@string.Join(", ", produto.Categoria.Select(c => c.Nome))"
-                             data-imagem="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")">
-                            <img src="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")" class="card-img-top" alt="@produto.Nome" />
-                            <div class="card-body">
-                                <h5 class="card-title">@produto.Nome</h5>
-                                <p class="card-text">@produto.Marca</p>
-                                <p class="card-text"><strong>@produto.Preco.ToString("C")</strong></p>
+            @if (produtosDoGrupo.Any())
+            {
+                <div class="row">
+                    @foreach (var produto in produtosDoGrupo)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 produto-card"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#produtoModal"
+                                 data-nome="@produto.Nome"
+                                 data-marca="@produto.Marca"
+                                 data-preco="@produto.Preco.ToString("C")"
+                                 data-categoria="@string.Join(", ", produto.Categoria.Select(c => c.Nome))"
+                                 data-imagem="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")">
+                                <img src="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")" class="card-img-top" alt="@produto.Nome" />
+                                <div class="card-body">
+                                    <h5 class="card-title">@produto.Nome</h5>
+                                    <p class="card-text">@produto.Marca</p>
+                                    <p class="card-text"><strong>@produto.Preco.ToString("C")</strong></p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
-            </div>
-
-            <div class="text-center mt-3">
-                <a href="#" class="btn btn-outline-primary">Ver todos os Produtos</a>
-            </div>
+                    }
+                </div>
+                <div class="text-center mt-3">
+                    <a href="#" class="btn btn-outline-primary">Ver todos os Produtos</a>
+                </div>
+            }
+            else
+            {
+                <p>Nenhum produto disponível neste momento.</p>
+            }
         </div>
     </section>
 }
@@ -94,17 +113,10 @@
     const produtoModal = document.getElementById('produtoModal');
     produtoModal.addEventListener('show.bs.modal', function (event) {
         const card = event.relatedTarget;
-
-        const nome = card.getAttribute('data-nome');
-        const marca = card.getAttribute('data-marca');
-        const preco = card.getAttribute('data-preco');
-        const categoria = card.getAttribute('data-categoria');
-        const imagem = card.getAttribute('data-imagem').replace('~', '');
-
-        document.getElementById('modalNome').textContent = nome;
-        document.getElementById('modalMarca').textContent = marca;
-        document.getElementById('modalPreco').textContent = preco;
-        document.getElementById('modalCategoria').textContent = categoria;
-        document.getElementById('modalImagem').src = imagem;
+        document.getElementById('modalNome').textContent = card.getAttribute('data-nome');
+        document.getElementById('modalMarca').textContent = card.getAttribute('data-marca');
+        document.getElementById('modalPreco').textContent = card.getAttribute('data-preco');
+        document.getElementById('modalCategoria').textContent = card.getAttribute('data-categoria');
+        document.getElementById('modalImagem').src = card.getAttribute('data-imagem').replace('~', '');
     });
 </script>

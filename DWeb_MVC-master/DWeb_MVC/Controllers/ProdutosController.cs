@@ -52,17 +52,22 @@
           * SELECT *
           * FROM Produtos a INNER JOIN Categoria c ON a.Categoria = c.Id
           */
-            var listaProdutos = _bd.Produtos
-                .Include(p => p.Categoria)
-                .Include(p => p.Cores)
-                .Include(p => p.Tamanhos);
 
+            var listaProdutos = await _bd.Produtos
+     .Include(p => p.Categoria)
+         .ThenInclude(c => c.Grupos)
+     .Include(p => p.Cores)
+     .Include(p => p.Tamanhos)
+     .Include(p => p.Fotos)
+     .ToListAsync();
 
-            return View(await listaProdutos.ToListAsync());
-            }
+            return View(listaProdutos);
+        }
 
-            // GET: Produtos/Details/5
-            public async Task<IActionResult> Details(int? id)
+        
+
+        // GET: Produtos/Details/5
+        public async Task<IActionResult> Details(int? id)
             {
                 if (id == null || _bd.Produtos == null)
                 {
