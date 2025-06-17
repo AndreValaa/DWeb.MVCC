@@ -5,9 +5,50 @@
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
 }
 
-<div class="container my-5">
-    <h2 class="mb-4">Categoria: @ViewBag.Categoria</h2>
+@{
+    var gruposComCategorias = ViewBag.GruposCategorias as Dictionary<string, List<string>>;
+}
 
+
+<div class="container my-5">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <img src="~/imagens/logo.png" alt="Gold Stirrup" height="40" />
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarGrupos" aria-controls="navbarGrupos" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarGrupos">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    @foreach (var grupo in gruposComCategorias)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-capitalize" href="#" id="navbarDropdown_@grupo.Key" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                @grupo.Key
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown_@grupo.Key">
+                                @foreach (var categoria in grupo.Value)
+                                {
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Home"
+                                           asp-action="ProdutosPorCategoria"
+                                           asp-route-categoria="@categoria">
+                                            @categoria
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div class="row">
         @foreach (var produto in Model)
         {

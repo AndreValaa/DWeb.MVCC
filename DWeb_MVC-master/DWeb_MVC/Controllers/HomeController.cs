@@ -47,19 +47,32 @@ namespace DWeb_MVC.Controllers
         }
 
         public async Task<IActionResult> ProdutosPorCategoria(string categoria)
-        {
-            if (string.IsNullOrEmpty(categoria)) return NotFound();
+{
+    if (string.IsNullOrWhiteSpace(categoria))
+    {
+        return RedirectToAction("UserHome");
+    }
 
-            var produtos = await _bd.Produtos
-                .Include(p => p.Categoria)
-                    .ThenInclude(c => c.Grupos)
-                .Include(p => p.Fotos)
-                .Where(p => p.Categoria.Any(c => c.Nome == categoria))
-                .ToListAsync();
+    // Produtos da categoria selecionada
+    var produtos = await _bd.Produtos
+        .Include(p => p.Categoria)
+            .ThenInclude(c => c.Grupos)
+        .Include(p => p.Fotos)
+        .Where(p => p.Categoria.Any(c => c.Nome == categoria))
+        .ToListAsync();
 
-            ViewBag.Categoria = categoria;
-            return View(produtos);
-        }
+    // Grupos e categorias para a navbar (independente dos produtos)
+    var gruposCategorias = await _bd.Categorias
+        .Include(c => c.Grupos)
+        .Where(c => c.Grupos != null)
+        .GroupBy(c => c.Grupos.Nome)
+        .ToDictionaryAsync(g => g.Key, g => g.Select(c => c.Nome).Distinct().ToList());
+
+    ViewBag.GruposCategorias = gruposCategorias;
+
+    return View(produtos);
+}
+
 
 
 
