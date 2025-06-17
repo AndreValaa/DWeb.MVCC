@@ -69,7 +69,10 @@
                 }
             </div>
             <div class="text-center mt-3">
-                <a href="#" class="btn btn-outline-primary">Ver todos os Produtos</a>
+                <a asp-action="ProdutosPorGrupo" asp-controller="Home" asp-route-grupo="@grupoNome"
+                   class="btn btn-outline-primary">
+                    Ver todos os Produtos
+                </a>
             </div>
         </div>
     </section>
