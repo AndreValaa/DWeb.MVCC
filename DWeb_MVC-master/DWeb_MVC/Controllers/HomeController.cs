@@ -24,6 +24,7 @@ namespace DWeb_MVC.Controllers
         {
             var listaProdutos = await _bd.Produtos
                 .Include(p => p.Categoria)
+                    .ThenInclude(c => c.Grupos)
                 .Include(p => p.Fotos)
                 .ToListAsync();
 
