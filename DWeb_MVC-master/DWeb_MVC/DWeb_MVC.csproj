@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\TamanhosController - Copy.cs" />
     <Compile Remove="Controllers\UserHome.cs" />
     <Compile Remove="Views\Home\Index3.cshtml.cs" />
     <Compile Remove="Views\Home\ProdutosPorCategoria.cshtml.cs" />

@@ -1,0 +1,74 @@
+﻿@model List<DWeb_MVC.Models.CarrinhoItem>
+
+@{
+    ViewData["Title"] = "Carrinho de Compras";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<h2>Carrinho de Compras</h2>
+
+@if (!Model.Any())
+{
+    <p>O seu carrinho está vazio.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Imagem</th>
+                <th>Produto</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+                <th>Total</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><img src="~/imagens/@item.Imagem" alt="@item.Nome" width="80" /></td>
+                    <td>@item.Nome</td>
+                    <td>@item.Preco.ToString("C")</td>
+                    <td>
+                        <input type="number" value="@item.Quantidade" min="1" class="form-control quantidade-input" data-produto-id="@item.ProdutoId" />
+                    </td>
+                    <td>@String.Format("{0:C}", item.Preco * item.Quantidade)</td>
+
+                    <td>
+                        <a asp-action="RemoverDoCarrinho" asp-route-id="@item.ProdutoId" class="btn btn-danger">Remover</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h4>Total: @Model.Sum(i => i.Preco * i.Quantidade).ToString("C")</h4>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <form asp-controller="Carrinho" asp-action="FinalizarCompra" method="post">
+            <button type="submit" class="btn btn-success">Finalizar Compra</button>
+        </form>
+    }
+    else
+    {
+        <p class="text-danger">É necessário estar autenticado para finalizar a compra.</p>
+        <a href="/Identity/Account/Login" class="btn btn-warning">Iniciar Sessão</a>
+
+    }
+}
+<script>
+    document.querySelectorAll('.quantidade-input').forEach(input => {
+        input.addEventListener('change', function () {
+            const produtoId = this.getAttribute('data-produto-id');
+            const quantidade = this.value;
+            fetch(`/Carrinho/AtualizarQuantidade?produtoId=${produtoId}&quantidade=${quantidade}`, {
+                method: 'POST'
+            }).then(() => {
+                location.reload();
+            });
+        });
+    });
+</script>

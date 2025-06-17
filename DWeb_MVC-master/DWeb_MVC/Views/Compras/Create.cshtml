@@ -12,15 +12,37 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Pago" /> @Html.DisplayNameFor(model => model.Pago)
-                </label>
-            </div>
+
             <div class="form-group">
-                <label asp-for="ClientesFK" class="control-label"></label>
-                <select asp-for="ClientesFK" class="form-control" asp-items="ViewBag.ClientesFK"></select>
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <label asp-for="ProdutosComprados" class="control-label"></label>
+                <input asp-for="ProdutosComprados" class="form-control" />
+                <span asp-validation-for="ProdutosComprados" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PrecoTotal" class="control-label"></label>
+                <input asp-for="PrecoTotal" class="form-control" />
+                <span asp-validation-for="PrecoTotal" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="QuantidadeTotal" class="control-label"></label>
+                <input asp-for="QuantidadeTotal" class="form-control" />
+                <span asp-validation-for="QuantidadeTotal" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DataCompra" class="control-label"></label>
+                <input asp-for="DataCompra" class="form-control" type="datetime-local" />
+                <span asp-validation-for="DataCompra" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -33,5 +55,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
