@@ -87,21 +87,61 @@
 
     <!-- Conteúdo Principal -->
     <div class="container content">
-        <h1>Gold Stirrup</h1>
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="list-group">
-                    <a asp-controller="Produtos" asp-action="Index" class="list-group-item list-group-item-action">Ver catálogo</a>
-                    <a asp-controller="Categorias" asp-action="Index" class="list-group-item list-group-item-action">Ver categorias</a>
-                    <a asp-controller="Clientes" asp-action="Index" class="list-group-item list-group-item-action">Ver utilizadores</a>
-                    <a asp-controller="Compras" asp-action="Index" class="list-group-item list-group-item-action">Ver compras</a>
-                    <a asp-controller="Cores" asp-action="Index" class="list-group-item list-group-item-action">Ver cores</a>
-                    <a asp-controller="Tamanhos" asp-action="Index" class="list-group-item list-group-item-action">Ver tamanhos</a>
-                    <a asp-controller="Grupos" asp-action="Index" class="list-group-item list-group-item-action">Ver grupos</a>
-                </div>
+        <h1 class="display-4 mb-5">Painel de Administração</h1>
+
+        <!-- Secção 1: Gestão de Dados -->
+        <h3 class="mb-3"> Gestão de Dados</h3>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <a asp-controller="Produtos" asp-action="Index" class="card shadow text-center p-4 h-100">
+                    <h5 class="card-title"> Produtos</h5>
+                    <p class="card-text">Adicionar e editar catálogo</p>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a asp-controller="Categorias" asp-action="Index" class="card shadow text-center p-4 h-100">
+                    <h5 class="card-title"> Categorias</h5>
+                    <p class="card-text">Gerir categorias</p>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a asp-controller="Grupos" asp-action="Index" class="card shadow text-center p-4 h-100">
+                    <h5 class="card-title"> Grupos</h5>
+                    <p class="card-text">Organizar categorias</p>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a asp-controller="Cores" asp-action="Index" class="card shadow text-center p-4 h-100">
+                    <h5 class="card-title"> Cores</h5>
+                    <p class="card-text">Gerir cores dos produtos</p>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a asp-controller="Tamanhos" asp-action="Index" class="card shadow text-center p-4 h-100">
+                    <h5 class="card-title"> Tamanhos</h5>
+                    <p class="card-text">Gerir tamanhos</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Secção 2: Consulta/Admin -->
+        <h3 class="mt-5 mb-3"> Área de Consulta</h3>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <a asp-controller="Clientes" asp-action="Index" class="card bg-light shadow text-center p-4 h-100">
+                    <h5 class="card-title"> Utilizadores</h5>
+                    <p class="card-text">Visualizar e moderar utilizadores</p>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a asp-controller="Compras" asp-action="Index" class="card bg-light shadow text-center p-4 h-100">
+                    <h5 class="card-title"> Compras</h5>
+                    <p class="card-text">Consultar histórico de compras</p>
+                </a>
             </div>
         </div>
     </div>
+
 
     <!-- Sobre nos -->
     <div class="container content">
