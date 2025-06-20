@@ -29,7 +29,7 @@ else
             {
                 <tr>
                     <td><img src="~/imagens/@item.Imagem" alt="@item.Nome" width="80" /></td>
-                    <td>@item.Nome</td>
+                    <td>@item.Nome <br/><small>Cor: @item.Cor, Tamanho: @item.Tamanho</small> </td>
                     <td>@item.Preco.ToString("C")</td>
                     <td>
                         <input type="number" value="@item.Quantidade" min="1" class="form-control quantidade-input" data-produto-id="@item.ProdutoId" />
