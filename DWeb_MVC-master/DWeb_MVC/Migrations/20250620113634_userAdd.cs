@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DWeb_MVC.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class userAdd : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -234,16 +234,19 @@ namespace DWeb_MVC.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Pago = table.Column<bool>(type: "bit", nullable: false),
-                    ClientesFK = table.Column<int>(type: "int", nullable: false),
-                    ClienteId = table.Column<int>(type: "int", nullable: true)
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProdutosComprados = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PrecoTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    QuantidadeTotal = table.Column<int>(type: "int", nullable: false),
+                    DataCompra = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClientesId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Compras", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Compras_Clientes_ClienteId",
-                        column: x => x.ClienteId,
+                        name: "FK_Compras_Clientes_ClientesId",
+                        column: x => x.ClientesId,
                         principalTable: "Clientes",
                         principalColumn: "Id");
                 });
@@ -389,6 +392,21 @@ namespace DWeb_MVC.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "admin", null, "admin", "ADMIN" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "028f5626-60cd-473b-9713-8ffdad5b47f3", 0, "944a1ad5-6a5b-4d20-b556-ac2017faa24a", "admin@gmail.com", true, false, null, "ADMIN@GMAIL.COM", "ADMIN@GMAIL.COM", "AQAAAAIAAYagAAAAECTsx4WD4Iz/v5MUj88/B3qeU2l+B3ssQ8HbnMDwUFWcAGgbhQlZfbs6Bw8HcIZD2A==", null, false, "WFKPRDAUOFEZQNIZ7NKO4R6O3EGGIBCM", false, "admin@gmail.com" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "admin", "028f5626-60cd-473b-9713-8ffdad5b47f3" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -439,9 +457,9 @@ namespace DWeb_MVC.Migrations
                 column: "ListaProdutosId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Compras_ClienteId",
+                name: "IX_Compras_ClientesId",
                 table: "Compras",
-                column: "ClienteId");
+                column: "ClientesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CoresProdutos_ListaProdutosId",

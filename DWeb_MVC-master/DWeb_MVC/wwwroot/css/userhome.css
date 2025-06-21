@@ -100,3 +100,7 @@
     display: block;
     margin: 0 auto;
 }
+
+.navbar.bg-dark {
+    background-color: #44301b !important;
+}

@@ -5,9 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using DWeb_MVC.Data;
 using DWeb_MVC.Models;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DWeb_MVC.Controllers
 {
+    [Authorize(Roles ="admin")]
     public class GruposController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -17,16 +19,7 @@ namespace DWeb_MVC.Controllers
             _context = context;
         }
 
-        // Apenas o admin pode aceder
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            var email = context.HttpContext.User.Identity?.Name?.ToLower();
-            if (email != "jose1@gmail.com")
-            {
-                context.Result = new RedirectToActionResult("UserHome", "Home", null);
-            }
-            base.OnActionExecuting(context);
-        }
+
 
         // GET: Grupos
         public async Task<IActionResult> Index()

@@ -23,6 +23,8 @@ namespace DWeb_MVC.Controllers
             _logger = logger;
         }
 
+        
+
         public async Task<IActionResult> UserHome()
         {
             var produtos = await _bd.Produtos
@@ -138,19 +140,18 @@ namespace DWeb_MVC.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if (User.IsInRole("admin")) 
+            {
+                // Usuário é admin → retorna a view padrão
+                return View("Index");
+            }
+            var listaProdutos = await _bd.Produtos
+       .Include(p => p.Categoria)
+           .ThenInclude(c => c.Grupos)
+       .Include(p => p.Fotos)
+       .ToListAsync();
 
-          
-                if (User.Identity.Name?.ToLower() != "jose1@gmail.com")
-                {
-                    return RedirectToAction("UserHome");
-                }
-
-                /* procurar, na base de dados, a lista dos produtos existentes
-              * SELECT *
-              * FROM Produtos a INNER JOIN Categoria c ON a.Categoria = c.Id
-              */
-                var listaProdutos = await _bd.Produtos.Include(p => p.Categoria).ToListAsync();
-            return View(new { products = listaProdutos });
+            return View("UserHome", listaProdutos);
         }
 
 
