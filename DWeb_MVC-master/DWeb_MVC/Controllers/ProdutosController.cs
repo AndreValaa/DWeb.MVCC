@@ -13,8 +13,8 @@
 
     namespace DWeb_MVC.Controllers
     {
-
-        public class ProdutosController : Controller
+    [Authorize(Roles = "admin")]
+    public class ProdutosController : Controller
         {
             private readonly ApplicationDbContext _bd;
 
@@ -24,16 +24,16 @@
             /// </summary>
             private readonly IWebHostEnvironment _webHostEnvironment;
 
-            public override void OnActionExecuting(ActionExecutingContext context)
+            /*public override void OnActionExecuting(ActionExecutingContext context)
             {
-                var email = context.HttpContext.User.Identity?.Name?.ToLower();
+                /*var email = context.HttpContext.User.Identity?.Name?.ToLower();
                 if (email != "jose1@gmail.com")
                 {
                     context.Result = new RedirectToActionResult("UserHome", "Home", null);
                 }
 
                 base.OnActionExecuting(context);
-            }
+            }*/
 
 
             public ProdutosController(

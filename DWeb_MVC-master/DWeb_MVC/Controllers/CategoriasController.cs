@@ -12,12 +12,13 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace DWeb_MVC.Controllers
 {
+[Authorize(Roles = "admin")]
 
     public class CategoriasController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public override void OnActionExecuting(ActionExecutingContext context)
+        /*public override void OnActionExecuting(ActionExecutingContext context)
         {
             var email = context.HttpContext.User.Identity?.Name?.ToLower();
             if (email != "jose1@gmail.com")
@@ -26,7 +27,7 @@ namespace DWeb_MVC.Controllers
             }
 
             base.OnActionExecuting(context);
-        }
+        }*/
 
         public CategoriasController(ApplicationDbContext context)
         {

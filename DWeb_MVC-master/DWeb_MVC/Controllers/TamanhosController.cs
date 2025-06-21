@@ -1,13 +1,16 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DWeb_MVC.Data;
+﻿using DWeb_MVC.Data;
 using DWeb_MVC.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DWeb_MVC.Controllers
 {
+    [Authorize(Roles = "admin")]
+
     public class TamanhosController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -17,15 +20,7 @@ namespace DWeb_MVC.Controllers
             _context = context;
         }
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            var email = context.HttpContext.User.Identity?.Name?.ToLower();
-            if (email != "jose1@gmail.com")
-            {
-                context.Result = new RedirectToActionResult("UserHome", "Home", null);
-            }
-            base.OnActionExecuting(context);
-        }
+        
 
         public async Task<IActionResult> Index()
         {

@@ -99,3 +99,7 @@
     margin: 0 auto;
     display: block;
 }
+
+.navbar.bg-dark {
+    background-color: #44301b !important;
+}
