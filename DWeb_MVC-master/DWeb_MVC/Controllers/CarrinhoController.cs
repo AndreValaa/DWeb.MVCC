@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using DWeb_MVC.Models;
 using DWeb_MVC.Data;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Json;
+
 
 namespace DWeb_MVC.Controllers
 {
@@ -24,20 +26,41 @@ namespace DWeb_MVC.Controllers
             return View("~/Views/Home/Carrinho.cshtml", carrinho);
         }
 
-        public IActionResult AdicionarAoCarrinho(int id)
+        [HttpPost]
+
+        public IActionResult AdicionarAoCarrinho([FromBody] JsonElement data)
         {
+            if (!data.TryGetProperty("ProdutoId", out var produtoIdElem) ||
+                !data.TryGetProperty("Cor", out var corElem) ||
+                !data.TryGetProperty("Tamanho", out var tamanhoElem) ||
+                produtoIdElem.ValueKind != JsonValueKind.Number ||
+                corElem.ValueKind != JsonValueKind.String ||
+                tamanhoElem.ValueKind != JsonValueKind.String)
+            {
+                return Json(new { sucesso = false, mensagem = "Dados inválidos" });
+            }
+
+            int produtoId = produtoIdElem.GetInt32();
+            string cor = corElem.GetString();
+            string tamanho = tamanhoElem.GetString();
+
             var produto = _context.Produtos
                 .Include(p => p.Fotos)
-                .FirstOrDefault(p => p.Id == id);
+                .FirstOrDefault(p => p.Id == produtoId);
 
             if (produto == null)
             {
-                return NotFound();
+                return Json(new { sucesso = false, mensagem = "Produto não encontrado" });
             }
 
-            var carrinho = HttpContext.Session.GetObjectFromJson<List<CarrinhoItem>>("Carrinho") ?? new List<CarrinhoItem>();
+            var carrinho = HttpContext.Session.GetObjectFromJson<List<CarrinhoItem>>("Carrinho")
+                           ?? new List<CarrinhoItem>();
 
-            var itemExistente = carrinho.FirstOrDefault(c => c.ProdutoId == id);
+            var itemExistente = carrinho.FirstOrDefault(c =>
+                c.ProdutoId == produtoId &&
+                c.Cor == cor &&
+                c.Tamanho == tamanho);
+
             if (itemExistente != null)
             {
                 itemExistente.Quantidade++;
@@ -50,15 +73,18 @@ namespace DWeb_MVC.Controllers
                     Nome = produto.Nome,
                     Preco = produto.Preco,
                     Quantidade = 1,
-                    Imagem = produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg"
+                    Imagem = produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg",
+                    Cor = cor,
+                    Tamanho = tamanho
                 });
             }
 
             HttpContext.Session.SetObjectAsJson("Carrinho", carrinho);
 
-            // Voltar para onde estava
-            return Redirect(Request.Headers["Referer"].ToString());
+            return Json(new { sucesso = true, mensagem = "Produto adicionado ao carrinho com sucesso" });
         }
+
+
 
         public IActionResult RemoverDoCarrinho(int id)
         {
@@ -96,10 +122,14 @@ namespace DWeb_MVC.Controllers
 
             var userEmail = User.Identity.Name ?? "anónimo";
 
+            var produtosFormatados = string.Join(", ", carrinho.Select(c =>
+                $"{c.Nome} (x{c.Quantidade}) Cor: {c.Cor}, Tamanho: {c.Tamanho}"
+            ));
+
             var compra = new Compras
             {
                 Email = userEmail,
-                ProdutosComprados = string.Join(", ", carrinho.Select(c => $"{c.Nome} (x{c.Quantidade})")),
+                ProdutosComprados = produtosFormatados,
                 PrecoTotal = carrinho.Sum(c => c.Preco * c.Quantidade),
                 QuantidadeTotal = carrinho.Sum(c => c.Quantidade),
                 DataCompra = DateTime.Now
@@ -112,6 +142,7 @@ namespace DWeb_MVC.Controllers
 
             return RedirectToAction("UserHome", "Home");
         }
+
 
 
 
