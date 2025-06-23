@@ -21,9 +21,12 @@
         object-fit: cover;
     }
 
+
 #produtoModal img {
-    max-height: 300px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 800px;
     object-fit: contain;
-    margin: 0 auto;
     display: block;
+    margin: 0 auto;
 }

@@ -56,7 +56,7 @@
         color: #000000;
         border-radius: 8px;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        height: 100%; /* Garante altura consistente */
+        height: 100%; 
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -94,9 +94,9 @@
 
 #produtoModal img {
     width: 100%;
-    max-width: 400px; 
-    height: 300px; 
+    max-width: 600px;
+    max-height: 800px;
     object-fit: contain;
-    margin: 0 auto;
     display: block;
+    margin: 0 auto;
 }

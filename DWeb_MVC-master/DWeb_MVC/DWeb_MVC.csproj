@@ -39,6 +39,7 @@
     <Content Remove="Views\Home\Index2.cshtml" />
     <Content Remove="Views\Home\Index3.cshtml" />
     <Content Remove="Views\Home\Index4.cshtml" />
+    <Content Remove="Views\Home\UserProdutos.cshtml" />
     <Content Remove="wwwroot\css\site - Copy.css" />
     <Content Remove="wwwroot\imagens\carrosel\Carrosselimage1.png" />
     <Content Remove="wwwroot\imagens\carrosel\cavaloimagem.png" />

@@ -82,42 +82,44 @@ namespace DWeb_MVC.Controllers
             if (string.IsNullOrEmpty(grupo)) return NotFound();
 
             var produtos = await _bd.Produtos
-                .Include(p => p.Categoria)
-                    .ThenInclude(c => c.Grupos)
+                .Include(p => p.Categoria).ThenInclude(c => c.Grupos)
                 .Include(p => p.Fotos)
                 .Where(p => p.Categoria.Any(c => c.Grupos.Nome == grupo))
                 .ToListAsync();
+
+            ViewBag.GruposComCategorias = await _bd.Categorias
+                .Include(c => c.Grupos)
+                .Where(c => c.Grupos != null)
+                .GroupBy(c => c.Grupos.Nome)
+                .ToDictionaryAsync(g => g.Key, g => g.Select(c => c.Nome).Distinct().ToList());
 
             ViewBag.GrupoNome = grupo;
             return View(produtos);
         }
 
+
         public async Task<IActionResult> ProdutosPorCategoria(string categoria)
-{
-    if (string.IsNullOrWhiteSpace(categoria))
-    {
-        return RedirectToAction("UserHome");
-    }
+        {
+            if (string.IsNullOrWhiteSpace(categoria))
+            {
+                return RedirectToAction("UserHome");
+            }
 
-    // Produtos da categoria selecionada
-    var produtos = await _bd.Produtos
-        .Include(p => p.Categoria)
-            .ThenInclude(c => c.Grupos)
-        .Include(p => p.Fotos)
-        .Where(p => p.Categoria.Any(c => c.Nome == categoria))
-        .ToListAsync();
+            var produtos = await _bd.Produtos
+                .Include(p => p.Categoria).ThenInclude(c => c.Grupos)
+                .Include(p => p.Fotos)
+                .Where(p => p.Categoria.Any(c => c.Nome == categoria))
+                .ToListAsync();
 
-    // Grupos e categorias para a navbar (independente dos produtos)
-    var gruposCategorias = await _bd.Categorias
-        .Include(c => c.Grupos)
-        .Where(c => c.Grupos != null)
-        .GroupBy(c => c.Grupos.Nome)
-        .ToDictionaryAsync(g => g.Key, g => g.Select(c => c.Nome).Distinct().ToList());
+            ViewBag.GruposComCategorias = await _bd.Categorias
+                .Include(c => c.Grupos)
+                .Where(c => c.Grupos != null)
+                .GroupBy(c => c.Grupos.Nome)
+                .ToDictionaryAsync(g => g.Key, g => g.Select(c => c.Nome).Distinct().ToList());
 
-    ViewBag.GruposCategorias = gruposCategorias;
+            return View(produtos);
+        }
 
-    return View(produtos);
-}
 
 
 

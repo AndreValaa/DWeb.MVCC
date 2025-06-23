@@ -95,7 +95,8 @@
                              data-marca="@produto.Marca"
                              data-preco="@produto.Preco.ToString("C")"
                              data-categoria="@string.Join(", ", produto.Categoria.Select(c => c.Nome))"
-                             data-imagem="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")">
+                             data-imagem="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")"
+                             data-imagens="@string.Join(",", produto.Fotos.Select(f => f.NomeFicheiro))">
                             <img src="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")" class="card-img-top" alt="@produto.Nome" />
                             <div class="card-body">
                                 <h5 class="card-title">@produto.Nome</h5>
@@ -119,19 +120,26 @@
 
 <!-- Modal Produto -->  
 <div class="modal fade" id="produtoModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
+
         <div class="modal-content" style="background-color: #3a250e; color: #fff;">
             <div class="modal-header">
                 <h5 class="modal-title">Detalhes do Produto</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body text-center">
-                <img id="modalImagem" src="" alt="Imagem Produto" class="img-fluid mb-3" />
+                <div id="modalImagemContainer" style="position: relative; text-align: center;">
+                    <img id="modalImagem" src="" alt="Imagem Produto" class="img-fluid mb-3" style="max-height:300px; object-fit:contain;" />
+                    <button id="prevImg" class="btn btn-light" style="font-size: 1.3rem; padding: 0.5rem 1.2rem; position: absolute; left: 0; top: 50%; transform: translateY(-50%);">⟨</button>
+                    <button id="nextImg" class="btn btn-light" style="font-size: 1.3rem; padding: 0.5rem 1.2rem; position: absolute; right: 0; top: 50%; transform: translateY(-50%);">⟩</button>
+
+                </div>
+
                 <p><strong>Nome:</strong> <span id="modalNome"></span></p>
                 <p><strong>Marca:</strong> <span id="modalMarca"></span></p>
                 <p><strong>Preço:</strong> <span id="modalPreco"></span></p>
                 <p><strong>Categoria:</strong> <span id="modalCategoria"></span></p>
-                <p><strong>Cor:</strong><select id="modalCor" class="form-select mb-2"></select></p>
+                <p><strong>Cor:</strong> <span id="modalCor"></span></p>
                 <p><strong>Tamanho:</strong><select id="modalTamanho" class="form-select"></select></p>
             </div>
             <div class="modal-footer">
@@ -144,22 +152,26 @@
 
 <script>
     let produtoIdAtual = null;
+    let imagens = [];
+    let imgIndex = 0;
 
-    // Quando abre o modal, carrega os dados
+
     document.getElementById('produtoModal').addEventListener('show.bs.modal', async (event) => {
         const card = event.relatedTarget;
         produtoIdAtual = card.getAttribute('data-id');
 
-        // Preencher os campos do modal
         document.getElementById('modalNome').textContent = card.getAttribute('data-nome');
         document.getElementById('modalMarca').textContent = card.getAttribute('data-marca');
         document.getElementById('modalPreco').textContent = card.getAttribute('data-preco');
         document.getElementById('modalCategoria').textContent = card.getAttribute('data-categoria');
         document.getElementById('modalImagem').src = card.getAttribute('data-imagem').replace('~', '');
 
-        const corSelect = document.getElementById('modalCor');
+        const imagensStr = card.getAttribute('data-imagens');
+        imagens = imagensStr ? imagensStr.split(',') : [];
+        imgIndex = 0;
+        atualizarImagem();
+
         const tamanhoSelect = document.getElementById('modalTamanho');
-        corSelect.innerHTML = '';
         tamanhoSelect.innerHTML = '';
 
         try {
@@ -167,16 +179,17 @@
             if (!res.ok) throw new Error();
             const data = await res.json();
 
-            data.cores.forEach(cor => corSelect.innerHTML += `<option value="${cor}">${cor}</option>`);
-            data.tamanhos.forEach(tam => tamanhoSelect.innerHTML += `<option value="${tam}">${tam}</option>`);
+            document.getElementById('modalCor').textContent = data.cores.join(", ") || "N/A";
+
+            data.tamanhos.forEach(tam => {
+                tamanhoSelect.innerHTML += `<option value="${tam}">${tam}</option>`;
+            });
         } catch {
             showAlert("Erro ao carregar o produto.");
         }
     });
 
-    // Quando clica no botão, envia para o carrinho
     document.getElementById('modalAddCarrinhoBtn').addEventListener('click', async () => {
-        const cor = document.getElementById('modalCor').value;
         const tamanho = document.getElementById('modalTamanho').value;
 
         try {
@@ -185,9 +198,9 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ProdutoId: parseInt(produtoIdAtual),
-                    Cor: cor,
                     Tamanho: tamanho
                 })
+
             });
 
             const result = await res.json();
@@ -201,7 +214,25 @@
         }
     });
 
-    // Pop-up simples
+
+    function atualizarImagem() {
+        if (imagens.length > 0) {
+            document.getElementById('modalImagem').src = `/imagens/${imagens[imgIndex]}`;
+        } else {
+            document.getElementById('modalImagem').src = "/imagens/noProduto.jpg";
+        }
+    }
+
+    document.getElementById('prevImg').addEventListener('click', () => {
+        imgIndex = (imgIndex - 1 + imagens.length) % imagens.length;
+        atualizarImagem();
+    });
+
+    document.getElementById('nextImg').addEventListener('click', () => {
+        imgIndex = (imgIndex + 1) % imagens.length;
+        atualizarImagem();
+    });
+
     function showAlert(msg) {
         const div = document.createElement('div');
         div.className = 'alert alert-danger position-fixed top-50 start-50 translate-middle text-center';

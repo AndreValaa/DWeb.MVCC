@@ -27,31 +27,32 @@ namespace DWeb_MVC.Controllers
         }
 
         [HttpPost]
-
         public IActionResult AdicionarAoCarrinho([FromBody] JsonElement data)
         {
             if (!data.TryGetProperty("ProdutoId", out var produtoIdElem) ||
-                !data.TryGetProperty("Cor", out var corElem) ||
                 !data.TryGetProperty("Tamanho", out var tamanhoElem) ||
                 produtoIdElem.ValueKind != JsonValueKind.Number ||
-                corElem.ValueKind != JsonValueKind.String ||
                 tamanhoElem.ValueKind != JsonValueKind.String)
             {
                 return Json(new { sucesso = false, mensagem = "Dados inválidos" });
             }
 
             int produtoId = produtoIdElem.GetInt32();
-            string cor = corElem.GetString();
             string tamanho = tamanhoElem.GetString();
 
             var produto = _context.Produtos
                 .Include(p => p.Fotos)
+                .Include(p => p.Cores) // Garante que carregamos as cores
                 .FirstOrDefault(p => p.Id == produtoId);
 
             if (produto == null)
             {
                 return Json(new { sucesso = false, mensagem = "Produto não encontrado" });
             }
+
+            var cor = (produto.Cores != null && produto.Cores.Any())
+                ? string.Join(", ", produto.Cores.Select(c => c.Nome))
+                : "N/A";
 
             var carrinho = HttpContext.Session.GetObjectFromJson<List<CarrinhoItem>>("Carrinho")
                            ?? new List<CarrinhoItem>();
@@ -83,8 +84,6 @@ namespace DWeb_MVC.Controllers
 
             return Json(new { sucesso = true, mensagem = "Produto adicionado ao carrinho com sucesso" });
         }
-
-
 
         public IActionResult RemoverDoCarrinho(int id)
         {
@@ -142,10 +141,5 @@ namespace DWeb_MVC.Controllers
 
             return RedirectToAction("UserHome", "Home");
         }
-
-
-
-
-
     }
 }
