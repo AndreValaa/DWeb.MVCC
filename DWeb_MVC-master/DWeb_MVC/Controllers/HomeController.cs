@@ -140,18 +140,14 @@ namespace DWeb_MVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("admin")) 
+            if (User.Identity.IsAuthenticated && User.IsInRole("admin"))
             {
-                // Usuário é admin → retorna a view padrão
+                // Admin → vai para a view admin
                 return View("Index");
             }
-            var listaProdutos = await _bd.Produtos
-       .Include(p => p.Categoria)
-           .ThenInclude(c => c.Grupos)
-       .Include(p => p.Fotos)
-       .ToListAsync();
 
-            return View("UserHome", listaProdutos);
+            // Qualquer outro → redireciona para UserHome
+            return RedirectToAction("UserHome", "Home");
         }
 
 
