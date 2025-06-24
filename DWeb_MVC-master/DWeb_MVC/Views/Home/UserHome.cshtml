@@ -8,7 +8,7 @@
     var produtosPorGrupo = ViewBag.ProdutosPorGrupo as Dictionary<string, List<DWeb_MVC.Models.Produtos>>;
 }
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mt-3">
     <div class="container-fluid">
         <a class="navbar-brand" href="@Url.Action("Index", "Home")">
             <img src="~/imagens/logo.png" alt="Gold Stirrup" height="40" />
@@ -46,6 +46,7 @@
             <a href="@Url.Action("Index", "Carrinho")" class="nav-link">
                 <img src="~/imagens/Carrocompras.jpg" alt="Carrinho" height="30" />
             </a>
+            <partial name="_LoginPartial" />
         </div>
     </div>
 </nav>
@@ -130,8 +131,8 @@
             <div class="modal-body text-center">
                 <div id="modalImagemContainer" style="position: relative; text-align: center;">
                     <img id="modalImagem" src="" alt="Imagem Produto" class="img-fluid mb-3" style="max-height:300px; object-fit:contain;" />
-                    <button id="prevImg" class="btn btn-light" style="font-size: 1.3rem; padding: 0.5rem 1.2rem; position: absolute; left: 0; top: 50%; transform: translateY(-50%);">⟨</button>
-                    <button id="nextImg" class="btn btn-light" style="font-size: 1.3rem; padding: 0.5rem 1.2rem; position: absolute; right: 0; top: 50%; transform: translateY(-50%);">⟩</button>
+                    <button id="prevImg" class="btn border-0 bg-transparent text-white" style="font-size: 1.3rem; padding: 0.5rem 1.2rem; position: absolute; left: 0; top: 50%; transform: translateY(-50%);">⟨</button>
+                    <button id="nextImg" class="btn border-0 bg-transparent text-white" style="font-size: 1.3rem; padding: 0.5rem 1.2rem; position: absolute; right: 0; top: 50%; transform: translateY(-50%);">⟩</button>
 
                 </div>
 
@@ -140,7 +141,10 @@
                 <p><strong>Preço:</strong> <span id="modalPreco"></span></p>
                 <p><strong>Categoria:</strong> <span id="modalCategoria"></span></p>
                 <p><strong>Cor:</strong> <span id="modalCor"></span></p>
-                <p><strong>Tamanho:</strong><select id="modalTamanho" class="form-select"></select></p>
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <strong class="me-2">Tamanho:</strong>
+                    <select id="modalTamanho" class="form-select form-select-sm" style="width: auto; min-width: 80px;"></select>
+                </div>
             </div>
             <div class="modal-footer">
                 <a id="modalAddCarrinhoBtn" class="btn btn-light">Adicionar ao Carrinho</a>

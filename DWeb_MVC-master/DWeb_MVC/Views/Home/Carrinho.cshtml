@@ -32,7 +32,7 @@ else
                     <td>@item.Nome <br/><small>Cor: @item.Cor, Tamanho: @item.Tamanho</small> </td>
                     <td>@item.Preco.ToString("C")</td>
                     <td>
-                        <input type="number" value="@item.Quantidade" min="1" class="form-control quantidade-input" data-produto-id="@item.ProdutoId" />
+                        <input type="number" value="@item.Quantidade" min="1" class="form-control form-control-sm quantidade-input" style="width: 90px;" data-produto-id="@item.ProdutoId" />
                     </td>
                     <td>@String.Format("{0:C}", item.Preco * item.Quantidade)</td>
 

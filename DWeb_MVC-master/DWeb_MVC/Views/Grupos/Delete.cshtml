@@ -4,23 +4,26 @@
     ViewData["Title"] = "Eliminar Grupo";
 }
 
-<h1 class="mb-4 text-danger">Tem a certeza que pretende eliminar este grupo?</h1>
+<h1>Eliminar</h1>
 
-<div class="mb-3">
-    <strong>Nome:</strong> @Model.Nome
+<h3>Tem a certeza que pretende eliminar este grupo?</h3>
+<div>
+    <h4>Grupos</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Nome)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Nome)
+        </dd>
+    </dl>
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Eliminar" class="btn btn-danger" /> |
+        <a asp-action="Index" class="btn btn-secondary">Voltar à lista</a>
+    </form>
 </div>
-
-<form asp-action="DeleteConfirmed">
-    <input type="hidden" asp-for="Id" />
-    <div class="form-group mt-3">
-        <input type="submit" value="Eliminar" class="btn btn-danger" />
-        <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
-    </div>
-</form>
-
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="text-danger mt-3">
-        @Html.ValidationSummary()
-    </div>
-}
