@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DWeb_MVC.Migrations
 {
     /// <inheritdoc />
-    public partial class updatemig : Migration
+    public partial class userAdd : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,19 +51,6 @@ namespace DWeb_MVC.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Categorias",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categorias", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Clientes",
                 columns: table => new
                 {
@@ -82,6 +69,32 @@ namespace DWeb_MVC.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Cores",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cores", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Grupos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Grupos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Produtos",
                 columns: table => new
                 {
@@ -94,6 +107,19 @@ namespace DWeb_MVC.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Produtos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tamanhos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tamanhos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -208,38 +234,61 @@ namespace DWeb_MVC.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Pago = table.Column<bool>(type: "bit", nullable: false),
-                    ClientesFK = table.Column<int>(type: "int", nullable: false),
-                    ClienteId = table.Column<int>(type: "int", nullable: true)
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProdutosComprados = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PrecoTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    QuantidadeTotal = table.Column<int>(type: "int", nullable: false),
+                    DataCompra = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClientesId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Compras", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Compras_Clientes_ClienteId",
-                        column: x => x.ClienteId,
+                        name: "FK_Compras_Clientes_ClientesId",
+                        column: x => x.ClientesId,
                         principalTable: "Clientes",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "CategoriasProdutos",
+                name: "Categorias",
                 columns: table => new
                 {
-                    CategoriaId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    GruposId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categorias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Categorias_Grupos_GruposId",
+                        column: x => x.GruposId,
+                        principalTable: "Grupos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CoresProdutos",
+                columns: table => new
+                {
+                    CoresId = table.Column<int>(type: "int", nullable: false),
                     ListaProdutosId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CategoriasProdutos", x => new { x.CategoriaId, x.ListaProdutosId });
+                    table.PrimaryKey("PK_CoresProdutos", x => new { x.CoresId, x.ListaProdutosId });
                     table.ForeignKey(
-                        name: "FK_CategoriasProdutos_Categorias_CategoriaId",
-                        column: x => x.CategoriaId,
-                        principalTable: "Categorias",
+                        name: "FK_CoresProdutos_Cores_CoresId",
+                        column: x => x.CoresId,
+                        principalTable: "Cores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CategoriasProdutos_Produtos_ListaProdutosId",
+                        name: "FK_CoresProdutos_Produtos_ListaProdutosId",
                         column: x => x.ListaProdutosId,
                         principalTable: "Produtos",
                         principalColumn: "Id",
@@ -264,6 +313,30 @@ namespace DWeb_MVC.Migrations
                         name: "FK_Fotografias_Produtos_ProdutoFK",
                         column: x => x.ProdutoFK,
                         principalTable: "Produtos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProdutosTamanhos",
+                columns: table => new
+                {
+                    ListaProdutosId = table.Column<int>(type: "int", nullable: false),
+                    TamanhosId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProdutosTamanhos", x => new { x.ListaProdutosId, x.TamanhosId });
+                    table.ForeignKey(
+                        name: "FK_ProdutosTamanhos_Produtos_ListaProdutosId",
+                        column: x => x.ListaProdutosId,
+                        principalTable: "Produtos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProdutosTamanhos_Tamanhos_TamanhosId",
+                        column: x => x.TamanhosId,
+                        principalTable: "Tamanhos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -294,6 +367,45 @@ namespace DWeb_MVC.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "CategoriasProdutos",
+                columns: table => new
+                {
+                    CategoriaId = table.Column<int>(type: "int", nullable: false),
+                    ListaProdutosId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoriasProdutos", x => new { x.CategoriaId, x.ListaProdutosId });
+                    table.ForeignKey(
+                        name: "FK_CategoriasProdutos_Categorias_CategoriaId",
+                        column: x => x.CategoriaId,
+                        principalTable: "Categorias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CategoriasProdutos_Produtos_ListaProdutosId",
+                        column: x => x.ListaProdutosId,
+                        principalTable: "Produtos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "admin", null, "admin", "ADMIN" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "028f5626-60cd-473b-9713-8ffdad5b47f3", 0, "944a1ad5-6a5b-4d20-b556-ac2017faa24a", "admin@gmail.com", true, false, null, "ADMIN@GMAIL.COM", "ADMIN@GMAIL.COM", "AQAAAAIAAYagAAAAECTsx4WD4Iz/v5MUj88/B3qeU2l+B3ssQ8HbnMDwUFWcAGgbhQlZfbs6Bw8HcIZD2A==", null, false, "WFKPRDAUOFEZQNIZ7NKO4R6O3EGGIBCM", false, "admin@gmail.com" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "admin", "028f5626-60cd-473b-9713-8ffdad5b47f3" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -335,14 +447,24 @@ namespace DWeb_MVC.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Categorias_GruposId",
+                table: "Categorias",
+                column: "GruposId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CategoriasProdutos_ListaProdutosId",
                 table: "CategoriasProdutos",
                 column: "ListaProdutosId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Compras_ClienteId",
+                name: "IX_Compras_ClientesId",
                 table: "Compras",
-                column: "ClienteId");
+                column: "ClientesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CoresProdutos_ListaProdutosId",
+                table: "CoresProdutos",
+                column: "ListaProdutosId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DetalhesCompras_ProdutoFK",
@@ -353,6 +475,11 @@ namespace DWeb_MVC.Migrations
                 name: "IX_Fotografias_ProdutoFK",
                 table: "Fotografias",
                 column: "ProdutoFK");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProdutosTamanhos_TamanhosId",
+                table: "ProdutosTamanhos",
+                column: "TamanhosId");
         }
 
         /// <inheritdoc />
@@ -377,10 +504,16 @@ namespace DWeb_MVC.Migrations
                 name: "CategoriasProdutos");
 
             migrationBuilder.DropTable(
+                name: "CoresProdutos");
+
+            migrationBuilder.DropTable(
                 name: "DetalhesCompras");
 
             migrationBuilder.DropTable(
                 name: "Fotografias");
+
+            migrationBuilder.DropTable(
+                name: "ProdutosTamanhos");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -392,10 +525,19 @@ namespace DWeb_MVC.Migrations
                 name: "Categorias");
 
             migrationBuilder.DropTable(
+                name: "Cores");
+
+            migrationBuilder.DropTable(
                 name: "Compras");
 
             migrationBuilder.DropTable(
                 name: "Produtos");
+
+            migrationBuilder.DropTable(
+                name: "Tamanhos");
+
+            migrationBuilder.DropTable(
+                name: "Grupos");
 
             migrationBuilder.DropTable(
                 name: "Clientes");

@@ -63,17 +63,13 @@
                     }
                 </td>
                 <td>
-                    @foreach (var tamanho in item.Tamanhos)
-                    {
-                        <span>@tamanho.Nome</span>
+                        @string.Join(", ", item.Tamanhos.Select(t => t.Nome))
 
-                        <br />
-                    }
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
                 </td>
             </tr>
         }

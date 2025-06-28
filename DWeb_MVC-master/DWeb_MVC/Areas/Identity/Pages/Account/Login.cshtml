@@ -3,9 +3,52 @@
 
 @{
     ViewData["Title"] = "Log in";
-}
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+
+   }
 
 <style>
+    .navbar {
+        background-color: #212529;
+        padding-top: 0.3rem !important;
+        padding-bottom: 0.3rem !important;
+        min-height: 56px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin-bottom: 1rem;
+    }
+
+        .navbar .nav-link {
+            color: white !important;
+            display: flex;
+            align-items: center;
+            height: 46px;
+            padding: 0 10px;
+        }
+
+        .navbar .navbar-brand img {
+            height: 40px;
+        }
+
+
+
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 56px - 1rem); 
+    }
+
+    .login-box {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+
     /* Estilos gerais */
     body {
         background: url('/path/to/background-image.jpg') no-repeat center center fixed;
@@ -18,8 +61,12 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        height: 100vh; /* ocupa o ecrã todo */
+        padding-top: 56px; /* altura da navbar */
+        box-sizing: border-box;
     }
+
+
 
     .login-box {
         background-color: rgba(255, 255, 255, 0.9);
@@ -74,6 +121,28 @@
 
 </style>
 
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+            <img src="~/imagens/logo.png" alt="Gold Stirrup" height="40" />
+        </a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="SobreNos">Sobre Nós</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Registar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
 <div class="login-container">
     <div class="login-box">
         
@@ -104,9 +173,9 @@
                 <button id="login-submit" type="submit" class="btn btn-primary">Log in</button>
                 
                 <!-- Links de esquecimento de senha e registro -->
-                <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+                <a id="forgot-password" asp-page="./ForgotPassword">Esqueceu-se da palavra-passe?</a>
+                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Registar um novo utilizador</a>
+                <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Reenviar confirmação por email</a>
             </form>
         </section>
     </div>

@@ -1,0 +1,32 @@
+﻿.produto-card {
+    min-height: 100%;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 8px;
+    overflow: hidden; 
+}
+
+    .produto-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+
+    .produto-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+
+#produtoModal img {
+    width: 100%;
+    max-width: 600px;
+    max-height: 800px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}

@@ -12,12 +12,13 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace DWeb_MVC.Controllers
 {
+[Authorize(Roles = "admin")]
 
     public class CategoriasController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public override void OnActionExecuting(ActionExecutingContext context)
+        /*public override void OnActionExecuting(ActionExecutingContext context)
         {
             var email = context.HttpContext.User.Identity?.Name?.ToLower();
             if (email != "jose1@gmail.com")
@@ -26,7 +27,7 @@ namespace DWeb_MVC.Controllers
             }
 
             base.OnActionExecuting(context);
-        }
+        }*/
 
         public CategoriasController(ApplicationDbContext context)
         {
@@ -36,9 +37,11 @@ namespace DWeb_MVC.Controllers
         // GET: Categorias
         public async Task<IActionResult> Index()
         {
-              return _context.Categorias != null ? 
-                          View(await _context.Categorias.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Categorias'  is null.");
+            var categorias = await _context.Categorias
+                                  .Include(c => c.Grupos)
+                                  .ToListAsync();
+
+            return View(categorias);
         }
 
         // GET: Categorias/Details/5
@@ -63,6 +66,7 @@ namespace DWeb_MVC.Controllers
         // GET: Categorias/Create
         public IActionResult Create()
         {
+            ViewData["ListaGrupos"] = new SelectList(_context.Grupos.OrderBy(g => g.Nome), "Id", "Nome");
             return View();
         }
 
@@ -71,7 +75,7 @@ namespace DWeb_MVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome")] Categorias categorias)
+        public async Task<IActionResult> Create([Bind("Id,Nome, GruposId")] Categorias categorias)
         {
             if (ModelState.IsValid)
             {
@@ -79,6 +83,8 @@ namespace DWeb_MVC.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ListaGrupos"] = new SelectList(_context.Grupos.OrderBy(g => g.Nome), "Id", "Nome", categorias.GruposId);
+
             return View(categorias);
         }
 
@@ -98,6 +104,7 @@ namespace DWeb_MVC.Controllers
             {
                 return NotFound();
             }
+            ViewData["ListaGrupos"] = new SelectList(_context.Grupos, "Id", "Nome", categorias.GruposId);
             return View(categorias);
         }
 
@@ -106,7 +113,7 @@ namespace DWeb_MVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome")] Categorias categorias)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome, GruposId")] Categorias categorias)
         {
             if (id != categorias.Id)
             {

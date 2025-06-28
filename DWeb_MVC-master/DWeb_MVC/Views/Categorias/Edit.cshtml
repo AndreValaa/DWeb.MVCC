@@ -19,7 +19,14 @@
                 <span asp-validation-for="Nome" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save Categoria" class="btn btn-primary" />
+                <label asp-for="GruposId" class="control-label"></label>
+                <select asp-for="GruposId" class="form-control"
+                        asp-items="ViewBag.ListaGrupos">
+                    <option value="">-- Selecione um grupo --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Guardar Categoria" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -48,11 +55,11 @@
                             <td>@produto.Marca</td>
                             <td>@produto.Preco.ToString("C")</td>
                             <td>
-                                <a asp-controller="Produtos" asp-action="Edit" asp-route-id="@produto.Id" class="btn btn-warning">Edit</a>
+                                <a asp-controller="Produtos" asp-action="Edit" asp-route-id="@produto.Id" class="btn btn-warning">Editar</a>
                                 <form asp-action="DeleteProduct" method="post" style="display:inline;">
                                     <input type="hidden" name="produtoId" value="@produto.Id" />
                                     <input type="hidden" name="categoriaId" value="@Model.Id" />
-                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja remover este produto?');">Remove</button>
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja remover este produto?');">Remover</button>
                                 </form>
                             </td>
                         </tr>
@@ -68,7 +75,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Voltar à lista</a>
 </div>
 
 @section Scripts {

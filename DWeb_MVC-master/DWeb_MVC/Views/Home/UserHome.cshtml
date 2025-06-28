@@ -3,16 +3,62 @@
 @{
     ViewData["Title"] = "Página Inicial";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+
+    var gruposComCategorias = ViewBag.GruposComCategorias as Dictionary<string, List<string>>;
+    var produtosPorGrupo = ViewBag.ProdutosPorGrupo as Dictionary<string, List<DWeb_MVC.Models.Produtos>>;
 }
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mt-3">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+            <img src="~/imagens/logo.png" alt="Gold Stirrup" height="40" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarGrupos" aria-controls="navbarGrupos" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarGrupos">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                @foreach (var grupo in gruposComCategorias)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-capitalize" href="#" id="navbarDropdown_@grupo.Key" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            @grupo.Key
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown_@grupo.Key">
+                            @foreach (var categoria in grupo.Value)
+                            {
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="Home"
+                                       asp-action="ProdutosPorCategoria"
+                                       asp-route-categoria="@categoria">
+                                        @categoria
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="d-flex ms-auto">
+            <a href="@Url.Action("Index", "Carrinho")" class="nav-link">
+                <img src="~/imagens/Carrocompras.jpg" alt="Carrinho" height="30" />
+            </a>
+            <partial name="_LoginPartial" />
+        </div>
+    </div>
+</nav>
 
 <div id="hero-section">
     <div id="carouselLoja" class="carousel slide" data-bs-ride="carousel" data-bs-interval="9000">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="~/imagens/carrosel/LogoGoldStirrup.png" alt="Imagem 1">
+                <img src="~/imagens/carrosel/LogoGoldStirrup.png" alt="Imagem 1" />
             </div>
             <div class="carousel-item">
-                <img src="~/imagens/carrosel/CarrosselImage2.png" alt="Imagem 2">
+                <img src="~/imagens/carrosel/CarrosselImage2.png" alt="Imagem 2" />
             </div>
         </div>
 
@@ -27,29 +73,31 @@
     </div>
 </div>
 
-@foreach (var categoria in new[] { "Cavalo", "Cavaleiro", "Estábulo" })
+@foreach (var grupoNome in gruposComCategorias.Keys.OrderBy(n => n))
 {
     <section class="categoria-bloco my-5 py-4 px-3 bg-white shadow rounded">
         <div class="container">
-            <h2 class="mb-3">@categoria</h2>
+            <h2 class="mb-3">@grupoNome</h2>
             <p class="mb-4 text-muted">
-                @(categoria == "Cavalo" ? "Na equitação a relação entre cavalo e cavaleiro é essencial, para tal deverá escolher os melhores produtos. Isto irá permitir-lhe passar um momento priveligiado com o seu cavalo, em segurança total, e ao mesmo tempo prevenir ferimentos ao seu cavalo."
-                    : categoria == "Cavaleiro" ? "Proteja-se com conforto e elegância. Aqui encontra os melhores equipamentos para o cavaleiro."
-                    : "Organização, higiene e bem-estar para o seu cavalo e o seu espaço. Descubra o melhor para o estábulo.")
+                @(grupoNome == "Cavalo" ? "Na equitação a relação entre cavalo e cavaleiro é essencial..."
+                    : grupoNome == "Cavaleiro" ? "Proteja-se com conforto e elegância."
+                    : "Organização, higiene e bem-estar para o seu cavalo.")
             </p>
 
             <div class="row">
-                @foreach (var produto in Model.Where(p => p.Categoria.Any(c => c.Nome == categoria)).OrderBy(p => Guid.NewGuid()).Take(3))
+                @foreach (var produto in produtosPorGrupo[grupoNome].Take(3))
                 {
                     <div class="col-md-4 mb-4">
                         <div class="card h-100 produto-card"
                              data-bs-toggle="modal"
                              data-bs-target="#produtoModal"
+                             data-id="@produto.Id"
                              data-nome="@produto.Nome"
                              data-marca="@produto.Marca"
                              data-preco="@produto.Preco.ToString("C")"
                              data-categoria="@string.Join(", ", produto.Categoria.Select(c => c.Nome))"
-                             data-imagem="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")">
+                             data-imagem="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")"
+                             data-imagens="@string.Join(",", produto.Fotos.Select(f => f.NomeFicheiro))">
                             <img src="~/imagens/@(produto.Fotos.FirstOrDefault()?.NomeFicheiro ?? "noProduto.jpg")" class="card-img-top" alt="@produto.Nome" />
                             <div class="card-body">
                                 <h5 class="card-title">@produto.Nome</h5>
@@ -62,49 +110,140 @@
             </div>
 
             <div class="text-center mt-3">
-                <a href="#" class="btn btn-outline-primary">Ver todos os Produtos</a>
+                <a asp-action="ProdutosPorGrupo" asp-controller="Home" asp-route-grupo="@grupoNome"
+                   class="btn btn-outline-primary">
+                    Ver todos os Produtos
+                </a>
             </div>
         </div>
     </section>
 }
 
-<!-- pop up produto -->
+
 <div class="modal fade" id="produtoModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
+
         <div class="modal-content" style="background-color: #3a250e; color: #fff;">
             <div class="modal-header">
                 <h5 class="modal-title">Detalhes do Produto</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body text-center">
-                <img id="modalImagem" src="" alt="Imagem Produto" class="img-fluid mb-3" />
+                <div id="modalImagemContainer" style="position: relative; text-align: center;">
+                    <img id="modalImagem" src="" alt="Imagem Produto" class="img-fluid mb-3" style="max-height:300px; object-fit:contain;" />
+                    <button id="prevImg" class="btn border-0 bg-transparent text-white" style="font-size: 1.3rem; padding: 0.5rem 1.2rem; position: absolute; left: 0; top: 50%; transform: translateY(-50%);">⟨</button>
+                    <button id="nextImg" class="btn border-0 bg-transparent text-white" style="font-size: 1.3rem; padding: 0.5rem 1.2rem; position: absolute; right: 0; top: 50%; transform: translateY(-50%);">⟩</button>
+
+                </div>
+
                 <p><strong>Nome:</strong> <span id="modalNome"></span></p>
                 <p><strong>Marca:</strong> <span id="modalMarca"></span></p>
                 <p><strong>Preço:</strong> <span id="modalPreco"></span></p>
                 <p><strong>Categoria:</strong> <span id="modalCategoria"></span></p>
+                <p><strong>Cor:</strong> <span id="modalCor"></span></p>
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <strong class="me-2">Tamanho:</strong>
+                    <select id="modalTamanho" class="form-select form-select-sm" style="width: auto; min-width: 80px;"></select>
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-light">Adicionar ao Carrinho</button>
+                <a id="modalAddCarrinhoBtn" class="btn btn-light">Adicionar ao Carrinho</a>
+
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const produtoModal = document.getElementById('produtoModal');
-    produtoModal.addEventListener('show.bs.modal', function (event) {
+    let produtoIdAtual = null;
+    let imagens = [];
+    let imgIndex = 0;
+
+
+    document.getElementById('produtoModal').addEventListener('show.bs.modal', async (event) => {
         const card = event.relatedTarget;
+        produtoIdAtual = card.getAttribute('data-id');
 
-        const nome = card.getAttribute('data-nome');
-        const marca = card.getAttribute('data-marca');
-        const preco = card.getAttribute('data-preco');
-        const categoria = card.getAttribute('data-categoria');
-        const imagem = card.getAttribute('data-imagem').replace('~', '');
+        document.getElementById('modalNome').textContent = card.getAttribute('data-nome');
+        document.getElementById('modalMarca').textContent = card.getAttribute('data-marca');
+        document.getElementById('modalPreco').textContent = card.getAttribute('data-preco');
+        document.getElementById('modalCategoria').textContent = card.getAttribute('data-categoria');
+        document.getElementById('modalImagem').src = card.getAttribute('data-imagem').replace('~', '');
 
-        document.getElementById('modalNome').textContent = nome;
-        document.getElementById('modalMarca').textContent = marca;
-        document.getElementById('modalPreco').textContent = preco;
-        document.getElementById('modalCategoria').textContent = categoria;
-        document.getElementById('modalImagem').src = imagem;
+        const imagensStr = card.getAttribute('data-imagens');
+        imagens = imagensStr ? imagensStr.split(',') : [];
+        imgIndex = 0;
+        atualizarImagem();
+
+        const tamanhoSelect = document.getElementById('modalTamanho');
+        tamanhoSelect.innerHTML = '';
+
+        try {
+            const res = await fetch(`/Home/GetCoresTamanhos/${produtoIdAtual}`);
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+
+            document.getElementById('modalCor').textContent = data.cores.join(", ") || "N/A";
+
+            data.tamanhos.forEach(tam => {
+                tamanhoSelect.innerHTML += `<option value="${tam}">${tam}</option>`;
+            });
+        } catch {
+            showAlert("Erro ao carregar o produto.");
+        }
     });
+
+    document.getElementById('modalAddCarrinhoBtn').addEventListener('click', async () => {
+        const tamanho = document.getElementById('modalTamanho').value;
+
+        try {
+            const res = await fetch('/Carrinho/AdicionarAoCarrinho', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ProdutoId: parseInt(produtoIdAtual),
+                    Tamanho: tamanho
+                })
+
+            });
+
+            const result = await res.json();
+            if (result.sucesso) {
+                location.reload();
+            } else {
+                showAlert(result.mensagem || "Erro ao adicionar");
+            }
+        } catch {
+            showAlert("Erro ao comunicar com o servidor.");
+        }
+    });
+
+
+    function atualizarImagem() {
+        if (imagens.length > 0) {
+            document.getElementById('modalImagem').src = `/imagens/${imagens[imgIndex]}`;
+        } else {
+            document.getElementById('modalImagem').src = "/imagens/noProduto.jpg";
+        }
+    }
+
+    document.getElementById('prevImg').addEventListener('click', () => {
+        imgIndex = (imgIndex - 1 + imagens.length) % imagens.length;
+        atualizarImagem();
+    });
+
+    document.getElementById('nextImg').addEventListener('click', () => {
+        imgIndex = (imgIndex + 1) % imagens.length;
+        atualizarImagem();
+    });
+
+    function showAlert(msg) {
+        const div = document.createElement('div');
+        div.className = 'alert alert-danger position-fixed top-50 start-50 translate-middle text-center';
+        div.style.zIndex = '9999';
+        div.style.width = '300px';
+        div.innerHTML = `<p class="m-0">${msg}</p>`;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 2000);
+    }
 </script>

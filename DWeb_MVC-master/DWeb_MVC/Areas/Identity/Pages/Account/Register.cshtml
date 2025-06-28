@@ -2,10 +2,35 @@
 @model RegisterModel
 
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Log in";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
 }
 
+
 <style>
+
+    .navbar {
+        background-color: #212529;
+        padding-top: 0.3rem !important;
+        padding-bottom: 0.3rem !important;
+        min-height: 56px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin-bottom: 1rem;
+    }
+
+        .navbar .nav-link {
+            color: white !important;
+            display: flex;
+            align-items: center;
+            height: 46px;
+            padding: 0 10px;
+        }
+
+        .navbar .navbar-brand img {
+            height: 40px;
+        }
+
+
     /* Estilos gerais */
     body {
         background: url('/path/to/background-image.jpg') no-repeat center center fixed;
@@ -61,6 +86,28 @@
 
 </style>
 
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+            <img src="~/imagens/logo.png" alt="Gold Stirrup" height="40" />
+        </a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="SobreNos">Sobre Nós</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Registar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
 <div class="register-container">
     <div class="register-box">
 
@@ -90,21 +137,21 @@
                     <!-- Campo de Username -->
                     <div class="form-floating mb-3">
                         <input asp-for="Input.Clientes.UserId" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                        <label asp-for="Input.Clientes.UserId">UserName</label>
+                        <label asp-for="Input.Clientes.UserId">Nome de Utilizador</label>
                         <span asp-validation-for="Input.Clientes.UserId" class="text-danger"></span>
                     </div>
 
                     <!-- Campo de Senha -->
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                        <label asp-for="Input.Password">Password</label>
+                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Palavra-passe" />
+                        <label asp-for="Input.Password">Palavra-passe</label>
                         <span asp-validation-for="Input.Password" class="text-danger"></span>
                     </div>
 
                     <!-- Campo de Confirmação de Senha -->
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                        <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirmar Palavra-passe" />
+                        <label asp-for="Input.ConfirmPassword">Confirmar Palavra-passe</label>
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                     </div>
 
@@ -113,29 +160,29 @@
                 <div class="col-md-6">
                     <!-- Campo de Nome -->
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.Clientes.Nome" class="form-control" placeholder="Full Name" />
-                        <label asp-for="Input.Clientes.Nome">Full Name</label>
+                        <input asp-for="Input.Clientes.Nome" class="form-control" placeholder="Nome Completo" />
+                        <label asp-for="Input.Clientes.Nome">Nome Completo</label>
                         <span asp-validation-for="Input.Clientes.Nome" class="text-danger"></span>
                     </div>
 
                     <!-- Campo de Telemóvel -->
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.Clientes.Telemovel" class="form-control" placeholder="Phone" />
-                        <label asp-for="Input.Clientes.Telemovel">Phone</label>
+                        <input asp-for="Input.Clientes.Telemovel" class="form-control" placeholder="Telefone" />
+                        <label asp-for="Input.Clientes.Telemovel">Telefone</label>
                         <span asp-validation-for="Input.Clientes.Telemovel" class="text-danger"></span>
                     </div>
 
                     <!-- Campo de Morada -->
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.Clientes.Morada" class="form-control" placeholder="Address" />
-                        <label asp-for="Input.Clientes.Morada">Address</label>
+                        <input asp-for="Input.Clientes.Morada" class="form-control" placeholder="Morada" />
+                        <label asp-for="Input.Clientes.Morada">Morada</label>
                         <span asp-validation-for="Input.Clientes.Morada" class="text-danger"></span>
                     </div>
 
                     <!-- Campo de Código Postal -->
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.Clientes.CodPostal" class="form-control" placeholder="Postal Code" />
-                        <label asp-for="Input.Clientes.CodPostal">Postal Code</label>
+                        <input asp-for="Input.Clientes.CodPostal" class="form-control" placeholder="Código Postal" />
+                        <label asp-for="Input.Clientes.CodPostal">Código postal</label>
                         <span asp-validation-for="Input.Clientes.CodPostal" class="text-danger"></span>
                     </div>
                 </div>
@@ -146,7 +193,7 @@
             <!-- Botão de Registro -->
             <div class="row">
                 <div class="col-md-4">
-                    <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+                    <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registar</button>
                 </div>
             </div>
         </form>

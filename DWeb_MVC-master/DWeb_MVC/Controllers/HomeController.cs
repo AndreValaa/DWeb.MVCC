@@ -1,8 +1,11 @@
 ﻿using DWeb_MVC.Data;
 using DWeb_MVC.Models;
+using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Text.Json;
+
 
 namespace DWeb_MVC.Controllers
 {
@@ -20,15 +23,114 @@ namespace DWeb_MVC.Controllers
             _logger = logger;
         }
 
+        
+
         public async Task<IActionResult> UserHome()
         {
-            var listaProdutos = await _bd.Produtos
-                .Include(p => p.Categoria)
+            var produtos = await _bd.Produtos
+      .Include(p => p.Categoria).ThenInclude(c => c.Grupos)
+      .Include(p => p.Fotos)
+      .Take(10) 
+      .ToListAsync();
+
+
+            ViewBag.GruposComCategorias = produtos
+                .SelectMany(p => p.Categoria)
+                .Where(c => c.Grupos != null)
+                .GroupBy(c => c.Grupos.Nome)
+                .ToDictionary(g => g.Key, g => g.Select(c => c.Nome).Distinct().ToList());
+
+            ViewBag.ProdutosPorGrupo = produtos
+                .GroupBy(p => p.Categoria.FirstOrDefault()?.Grupos?.Nome ?? "Outros")
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            return View(produtos);
+        }
+
+        public IActionResult SobreNos()
+        {
+            return View();
+        }
+
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetCoresTamanhos(int id)
+        {
+            var produto = await _bd.Produtos
+                .Include(p => p.Cores)
+                .Include(p => p.Tamanhos)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (produto == null)
+                return NotFound();
+
+            var resultado = new
+            {
+                cores = produto.Cores.Select(c => c.Nome).ToList(),
+                tamanhos = produto.Tamanhos.Select(t => t.Nome).ToList()
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(resultado, new JsonSerializerOptions
+            {
+                ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles
+            });
+
+            return Json(resultado);
+
+        }
+
+
+
+
+
+        public async Task<IActionResult> ProdutosPorGrupo(string grupo)
+        {
+            if (string.IsNullOrEmpty(grupo)) return NotFound();
+
+            var produtos = await _bd.Produtos
+                .Include(p => p.Categoria).ThenInclude(c => c.Grupos)
                 .Include(p => p.Fotos)
+                .Where(p => p.Categoria.Any(c => c.Grupos.Nome == grupo))
                 .ToListAsync();
 
-            return View(listaProdutos);
+            ViewBag.GruposComCategorias = await _bd.Categorias
+                .Include(c => c.Grupos)
+                .Where(c => c.Grupos != null)
+                .GroupBy(c => c.Grupos.Nome)
+                .ToDictionaryAsync(g => g.Key, g => g.Select(c => c.Nome).Distinct().ToList());
+
+            ViewBag.GrupoNome = grupo;
+            return View(produtos);
         }
+
+
+        public async Task<IActionResult> ProdutosPorCategoria(string categoria)
+        {
+            if (string.IsNullOrWhiteSpace(categoria))
+            {
+                return RedirectToAction("UserHome");
+            }
+
+            var produtos = await _bd.Produtos
+                .Include(p => p.Categoria).ThenInclude(c => c.Grupos)
+                .Include(p => p.Fotos)
+                .Where(p => p.Categoria.Any(c => c.Nome == categoria))
+                .ToListAsync();
+
+            ViewBag.GruposComCategorias = await _bd.Categorias
+                .Include(c => c.Grupos)
+                .Where(c => c.Grupos != null)
+                .GroupBy(c => c.Grupos.Nome)
+                .ToDictionaryAsync(g => g.Key, g => g.Select(c => c.Nome).Distinct().ToList());
+
+            return View(produtos);
+        }
+
+
+
+
 
         public async Task<IActionResult> UserProdutos()
         {
@@ -44,19 +146,14 @@ namespace DWeb_MVC.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if (User.Identity.IsAuthenticated && User.IsInRole("admin"))
+            {
+                // Admin → vai para a view admin
+                return View("Index");
+            }
 
-          
-                if (User.Identity.Name?.ToLower() != "jose1@gmail.com")
-                {
-                    return RedirectToAction("UserHome");
-                }
-
-                /* procurar, na base de dados, a lista dos produtos existentes
-              * SELECT *
-              * FROM Produtos a INNER JOIN Categoria c ON a.Categoria = c.Id
-              */
-                var listaProdutos = await _bd.Produtos.Include(p => p.Categoria).ToListAsync();
-            return View(new { products = listaProdutos });
+            // Qualquer outro → redireciona para UserHome
+            return RedirectToAction("UserHome", "Home");
         }
 
 

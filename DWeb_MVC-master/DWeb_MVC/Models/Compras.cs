@@ -2,21 +2,24 @@
 
 namespace DWeb_MVC.Models
 {
-    public class Compras{
-
+    public class Compras
+    {
         public int Id { get; set; }
-        /// <summary>
-        /// Comfirmação se cliente pagou a compra
-        /// </summary>
-        public bool Pago { get; set; }
-
-        //******************************
-
-        [ForeignKey(nameof(Clientes))]
-        public int ClientesFK { get; set; }
-        public Clientes Cliente { get; set; }
 
 
-        public List<DetalhesCompras> DetalhesCompras { get; set; } = new();
-	}
+        public string Email { get; set; }
+
+
+        public string ProdutosComprados { get; set; }
+
+
+        public decimal PrecoTotal { get; set; }
+
+
+        public int QuantidadeTotal { get; set; }
+
+
+        public DateTime DataCompra { get; set; }
+    }
 }
+
