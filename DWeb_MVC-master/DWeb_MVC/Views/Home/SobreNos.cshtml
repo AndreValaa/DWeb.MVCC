@@ -1,0 +1,98 @@
+﻿@{
+    ViewData["Title"] = "Sobre Nós";
+    Layout = null; 
+}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Loja Pública</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 70px;
+        }
+
+        .navbar {
+            background-color: #212529;
+        }
+
+            .navbar .nav-link {
+                color: white !important;
+                display: flex;
+                align-items: center;
+                height: 100%;
+                padding: 0 10px;
+            }
+
+            .navbar .navbar-brand img {
+                height: 40px;
+            }
+
+        footer {
+            margin-top: 100px;
+            color: #777;
+            text-align: center;
+        }
+
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <img src="~/imagens/logo.png" alt="Gold Stirrup" />
+            </a>
+            <div class="collapse navbar-collapse justify-content-end">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="SobreNos">Sobre Nós</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Registar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold mb-3">Desenvolvimento Web</h1>
+            <h3 class="text-muted mb-5">Engenharia Informática 2024/2025</h3>
+        </div>
+
+        <div class="mb-4">
+            <h5>Autores do Trabalho:</h5>
+            <p>André Vala nº23319<br />José Pereira nº23374</p>
+        </div>
+
+        <div class="mb-4">
+            <h5>Bibliotecas e Frameworks Usadas:</h5>
+            <p>A preencher posteriormente.</p>
+        </div>
+
+        <div class="mb-4">
+            <h5>Informação Adicional:</h5>
+            <ul>
+                <li>Nome do curso, disciplina e ano letivo;</li>
+                <li>Nº e nome dos autores do trabalho;</li>
+                <li>Identificação das bibliotecas, frameworks e código de terceiros usados (incluindo fontes);</li>
+                <li>Credenciais de acesso iniciais dos utilizadores (se aplicável).</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer class="mt-5">
+        &copy; 2025 Loja Online
+    </footer>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

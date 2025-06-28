@@ -47,6 +47,12 @@ namespace DWeb_MVC.Controllers
             return View(produtos);
         }
 
+        public IActionResult SobreNos()
+        {
+            return View();
+        }
+
+
 
 
         [HttpGet]
