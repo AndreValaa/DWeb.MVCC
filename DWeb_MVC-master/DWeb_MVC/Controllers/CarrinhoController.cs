@@ -21,6 +21,22 @@ namespace DWeb_MVC.Controllers
 
         public IActionResult Index()
         {
+
+            ViewBag.GruposComCategorias = _context.Categorias
+        .Include(c => c.Grupos)
+        .Where(c => c.Grupos != null)
+        .GroupBy(c => c.Grupos.Nome)
+        .ToDictionary(g => g.Key, g => g.Select(c => c.Nome).Distinct().ToList());
+
+            var produtos = _context.Produtos
+                .Include(p => p.Categoria).ThenInclude(c => c.Grupos)
+                .Include(p => p.Fotos)
+                .ToList();
+
+            ViewBag.ProdutosPorGrupo = produtos
+                .GroupBy(p => p.Categoria.FirstOrDefault()?.Grupos?.Nome ?? "Outros")
+                .ToDictionary(g => g.Key, g => g.ToList());
+
             var carrinho = HttpContext.Session.GetObjectFromJson<List<CarrinhoItem>>("Carrinho")
                            ?? new List<CarrinhoItem>();
             return View("~/Views/Home/Carrinho.cshtml", carrinho);
