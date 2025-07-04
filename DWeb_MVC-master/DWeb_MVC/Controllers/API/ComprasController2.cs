@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using DWeb_MVC.Data;
 using DWeb_MVC.Models;
 
-namespace DWeb_MVC.Controllers
+namespace DWeb_MVC.Controllers.API
 {
     [Route("api/[controller]")]
     public class ComprasController2 : Controller

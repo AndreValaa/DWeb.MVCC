@@ -30,7 +30,6 @@ namespace DWeb_MVC.Controllers
             var produtos = await _bd.Produtos
       .Include(p => p.Categoria).ThenInclude(c => c.Grupos)
       .Include(p => p.Fotos)
-      .Take(10) 
       .ToListAsync();
 
 
