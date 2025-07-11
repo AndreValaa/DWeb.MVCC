@@ -10,7 +10,8 @@ using DWeb_MVC.Models;
 namespace DWeb_MVC.Controllers.API
 {
     [Route("api/[controller]")]
-    public class ComprasController2 : Controller
+    [ApiController]
+    public class ComprasController2 : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
@@ -24,11 +25,24 @@ namespace DWeb_MVC.Controllers.API
         public async Task<ActionResult<IEnumerable<Compras>>> GetCompras()
         {
             if (_context.Compras == null)
-            {
                 return NotFound();
-            }
 
             return await _context.Compras.ToListAsync();
+        }
+
+        // GET: api/ComprasController2/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Compras>> GetCompra(int id)
+        {
+            if (_context.Compras == null)
+                return NotFound();
+
+            var compra = await _context.Compras.FindAsync(id);
+
+            if (compra == null)
+                return NotFound();
+
+            return compra;
         }
 
         // POST: api/ComprasController2
@@ -36,9 +50,7 @@ namespace DWeb_MVC.Controllers.API
         public async Task<ActionResult<Compras>> PostCompras([FromBody] CompraDto compraDto)
         {
             if (_context.Compras == null)
-            {
                 return Problem("Entity set 'ApplicationDbContext.Compras' is null.");
-            }
 
             var compra = new Compras
             {
@@ -52,7 +64,39 @@ namespace DWeb_MVC.Controllers.API
             _context.Compras.Add(compra);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetCompras), new { id = compra.Id }, compra);
+            return CreatedAtAction(nameof(GetCompra), new { id = compra.Id }, compra);
+        }
+
+        // PUT: api/ComprasController2/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutCompra(int id, [FromBody] CompraDto dto)
+        {
+            var compra = await _context.Compras.FindAsync(id);
+            if (compra == null)
+                return NotFound();
+
+            compra.Email = dto.Email;
+            compra.ProdutosComprados = dto.ProdutosComprados;
+            compra.PrecoTotal = dto.PrecoTotal;
+            compra.QuantidadeTotal = dto.QuantidadeTotal;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // DELETE: api/ComprasController2/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCompra(int id)
+        {
+            var compra = await _context.Compras.FindAsync(id);
+            if (compra == null)
+                return NotFound();
+
+            _context.Compras.Remove(compra);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 

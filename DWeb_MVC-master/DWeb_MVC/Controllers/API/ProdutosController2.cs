@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DWeb_MVC.Data;
 using DWeb_MVC.Models;
@@ -11,7 +6,7 @@ using DWeb_MVC.Models;
 namespace DWeb_MVC.Controllers.API
 {
     [Route("api/[controller]")]
-    // [ApiController]
+    [ApiController]
     public class ProdutosController2 : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -20,89 +15,83 @@ namespace DWeb_MVC.Controllers.API
         {
             _context = context;
         }
-        /*
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<bool> Create([FromBody] Compras compras)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(compras);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            return false;
-        }
-        */
 
         // GET: api/ProdutosController2
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Produtos>>> GetProdutos()
+        public async Task<ActionResult<IEnumerable<ProdutoResponseDTO>>> GetProdutos()
         {
-          if (_context.Produtos == null)
-          {
-              return NotFound();
-          }
-            return await _context.Produtos.Include(p => p.Fotos).Include(p => p.Categoria).ToListAsync();
+            var produtos = await _context.Produtos
+                .Include(p => p.Fotos)
+                .Include(p => p.Categoria)
+                .Include(p => p.Cores)
+                .Include(p => p.Tamanhos)
+                .ToListAsync();
+
+            var resultado = produtos.Select(p => new ProdutoResponseDTO
+            {
+                Id = p.Id,
+                Nome = p.Nome,
+                Marca = p.Marca,
+                Preco = p.Preco,
+                CategoriaNomes = p.Categoria.Select(c => c.Nome).ToList(),
+                Cores = p.Cores.Select(c => c.Nome).ToList(),
+                Tamanhos = p.Tamanhos.Select(t => t.Nome).ToList(),
+                Fotos = p.Fotos.Select(f => f.NomeFicheiro).ToList()
+            });
+
+            return Ok(resultado);
         }
 
         // GET: api/ProdutosController2/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Produtos>> GetProdutos(int id)
+        public async Task<ActionResult<ProdutoResponseDTO>> GetProduto(int id)
         {
-          if (_context.Produtos == null)
-          {
-              return NotFound();
-          }
-            var produtos = await _context.Produtos
+            var p = await _context.Produtos
+                .Include(p => p.Fotos)
                 .Include(p => p.Categoria)
                 .Include(p => p.Cores)
                 .Include(p => p.Tamanhos)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (produtos == null)
-            {
+            if (p == null)
                 return NotFound();
-            }
 
-            return produtos;
+            return new ProdutoResponseDTO
+            {
+                Id = p.Id,
+                Nome = p.Nome,
+                Marca = p.Marca,
+                Preco = p.Preco,
+                CategoriaNomes = p.Categoria.Select(c => c.Nome).ToList(),
+                Cores = p.Cores.Select(c => c.Nome).ToList(),
+                Tamanhos = p.Tamanhos.Select(t => t.Nome).ToList(),
+                Fotos = p.Fotos.Select(f => f.NomeFicheiro).ToList()
+            };
         }
-        /*
-        // PUT: api/ProdutosController2/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProdutos(int id, Produtos produtos)
+
+        // POST: api/ProdutosController2
+        [HttpPost]
+        public async Task<ActionResult> PostProduto([FromBody] ProdutoDTO produtoDto)
         {
-            if (id != produtos.Id)
+            var produto = new Produtos
             {
-                return BadRequest();
-            }
+                Nome = produtoDto.Nome,
+                Marca = produtoDto.Marca,
+                Preco = produtoDto.Preco,
+                Categoria = await _context.Categorias.Where(c => produtoDto.CategoriaIds.Contains(c.Id)).ToListAsync(),
+                Cores = await _context.Cores.Where(c => produtoDto.CorIds.Contains(c.Id)).ToListAsync(),
+                Tamanhos = await _context.Tamanhos.Where(t => produtoDto.TamanhoIds.Contains(t.Id)).ToListAsync()
+            };
 
-            _context.Entry(produtos).State = EntityState.Modified;
+            _context.Produtos.Add(produto);
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProdutosExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return CreatedAtAction(nameof(GetProduto), new { id = produto.Id }, produto);
         }
-        */
 
-        // PATCH: api/ProdutosController2/5
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchProdutos(int id, [FromBody] ProdutoUpdateDTO dto)
+        // PUT: api/ProdutosController2/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutProduto(int id, [FromBody] ProdutoDTO dto)
         {
             var produto = await _context.Produtos
                 .Include(p => p.Categoria)
@@ -113,110 +102,52 @@ namespace DWeb_MVC.Controllers.API
             if (produto == null)
                 return NotFound();
 
-            if (dto.Nome != null) produto.Nome = dto.Nome;
-            if (dto.Marca != null) produto.Marca = dto.Marca;
-            if (dto.Preco.HasValue) produto.Preco = dto.Preco.Value;
+            produto.Nome = dto.Nome;
+            produto.Marca = dto.Marca;
+            produto.Preco = dto.Preco;
+            produto.Categoria = await _context.Categorias.Where(c => dto.CategoriaIds.Contains(c.Id)).ToListAsync();
+            produto.Cores = await _context.Cores.Where(c => dto.CorIds.Contains(c.Id)).ToListAsync();
+            produto.Tamanhos = await _context.Tamanhos.Where(t => dto.TamanhoIds.Contains(t.Id)).ToListAsync();
 
-            if (dto.CategoriaIds != null)
-                produto.Categoria = await _context.Categorias.Where(c => dto.CategoriaIds.Contains(c.Id)).ToListAsync();
-
-            if (dto.CorIds != null)
-                produto.Cores = await _context.Cores.Where(c => dto.CorIds.Contains(c.Id)).ToListAsync();
-
-            if (dto.TamanhoIds != null)
-                produto.Tamanhos = await _context.Tamanhos.Where(t => dto.TamanhoIds.Contains(t.Id)).ToListAsync();
-
-            await _context.SaveChangesAsync();
-
-            return Ok();
-        }
-
-
-        // POST: api/ProdutosController2
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Produtos>> PostProdutos([FromBody] ProdutoDTO produtoDto)
-        {
-            if (_context.Produtos == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Produtos'  is null.");
-            }
-
-            try
-            {
-                var produto = new Produtos
-                {
-                    Nome = produtoDto.Nome,
-                    Marca = produtoDto.Marca,
-                    Preco = produtoDto.Preco,
-                    Categoria = _context.Categorias.Where(c => produtoDto.CategoriaIds.Contains(c.Id)).ToList(),
-                    Cores = _context.Cores.Where(c => produtoDto.CorIds.Contains(c.Id)).ToList(),
-                    Tamanhos = _context.Tamanhos.Where(t => produtoDto.TamanhoIds.Contains(t.Id)).ToList()
-                };
-
-                _context.Produtos.Add(produto);
-                await _context.SaveChangesAsync();
-
-                return CreatedAtAction(nameof(GetProdutos), new { id = produto.Id }, produto);
-
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Internal Server Error", details = ex.Message });
-            }
-        }
-
-        // DELETE: api/ProdutosController2/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProdutos(int id)
-        {
-            if (_context.Produtos == null)
-            {
-                return NotFound();
-            }
-            var produtos = await _context.Produtos.FindAsync(id);
-            if (produtos == null)
-            {
-                return NotFound();
-            }
-
-            _context.Produtos.Remove(produtos);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool ProdutosExists(int id)
+        // DELETE: api/ProdutosController2/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduto(int id)
         {
-            return (_context.Produtos?.Any(e => e.Id == id)).GetValueOrDefault();
+            var produto = await _context.Produtos.FindAsync(id);
+            if (produto == null)
+                return NotFound();
+
+            _context.Produtos.Remove(produto);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
-}
 
-public class ProdutoDTO
-{
-    public string Nome { get; set; }
+    public class ProdutoDTO
+    {
+        public string Nome { get; set; }
+        public string Marca { get; set; }
+        public decimal Preco { get; set; }
+        public List<int> CategoriaIds { get; set; }
+        public List<int> CorIds { get; set; }
+        public List<int> TamanhoIds { get; set; }
+    }
 
-    public string Marca { get; set; }
-
-    public decimal Preco { get; set; }
-
-    // IDs das categorias associadas
-    public List<int> CategoriaIds { get; set; }
-
-    // IDs das cores associadas
-    public List<int> CorIds { get; set; }
-
-    // IDs dos tamanhos associados
-    public List<int> TamanhoIds { get; set; }
-}
-
-public class ProdutoUpdateDTO
-{
-    public string? Nome { get; set; }
-    public string? Marca { get; set; }
-    public decimal? Preco { get; set; }
-    public List<int>? CategoriaIds { get; set; }
-    public List<int>? CorIds { get; set; }
-    public List<int>? TamanhoIds { get; set; }
+    public class ProdutoResponseDTO
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; }
+        public string Marca { get; set; }
+        public decimal Preco { get; set; }
+        public List<string> CategoriaNomes { get; set; }
+        public List<string> Cores { get; set; }
+        public List<string> Tamanhos { get; set; }
+        public List<string> Fotos { get; set; }
+    }
 }
