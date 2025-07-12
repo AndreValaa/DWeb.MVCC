@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\API\ValuesController.cs" />
     <Compile Remove="Controllers\TamanhosController - Copy.cs" />
     <Compile Remove="Controllers\UserHome.cs" />
     <Compile Remove="Views\Home\Index3.cshtml.cs" />
